@@ -18,6 +18,7 @@ Es soll ein Commandline-Routenplanungstool in C mit erweiterten Funktionalitäte
 * _Wegpunkte_: Der Anwender gibt Startort, Zielort und Wegpunkte an, die zusätzlich erreicht werden sollen. Das Tool berechnet den Pfad unter Berücksichtigung der Wegpunkte.
 * _Debug-Modus_: Bei aktiviertem Debug-Modus zeigt das Tool detaillierte Schritte der Berechnung an (z.B. welche Knoten untersucht wurden und welche Verbindungen gewählt wurden).
 * _Fehlererkennung_ (optional): Bei Hindernissen (gesperrte Straßen oder Wegpunkte) wird der Anwender darauf hingewiesen, und das Tool berechnet den optimalen Pfad unter Berücksichtigung dieser Einschränkungen.
+* _Wegpunktdatei_ (optional): Wegpunkte, aus einer vom Nutzer erstellten Datei, einlesen und auf diesen einen Weg berechnen
 
 ## Funktionsumfang
 
@@ -37,7 +38,7 @@ Es soll ein Commandline-Routenplanungstool in C mit erweiterten Funktionalitäte
 * Algorithmen:
   * Dijkstra-Algorithmus (o.g.)
   * A-Algorithmus* (optional): Eine optimierte Version des Dijkstra-Algorithmus mit einer Heuristik zur schnelleren Berechnung des Pfads
-* Datenformat für Wegpunkte: Wegpunkte werden in einer Textdatei im CSV-Format gespeichert.
+* Datenformat für Wegpunkte: Wegpunkte werden in einer Textdatei, vermutlich im CSV-Format, gespeichert.
 
 ## Beispiel
 
@@ -45,6 +46,11 @@ Es soll ein Commandline-Routenplanungstool in C mit erweiterten Funktionalitäte
 
 ```
 ./routenplaner --start Stuttgart --ziel Berlin --waypoints Hamburg
+```
+
+Mit Datei (optional):
+```
+./routenplaner --map "Wegpunkte.csv" --start Stuttgart --ziel Berlin --waypoints Hamburg
 ```
 
 **Ausgabe:**

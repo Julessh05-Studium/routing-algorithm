@@ -1,6 +1,9 @@
 #include <stdio.h>
+#include <_stdlib.h>
+#include "io.h"
 
 int main(void) {
-    printf("Hello, World!\n");
-    return 0;
+    readUserPoints();
+
+    return EXIT_SUCCESS;
 }
