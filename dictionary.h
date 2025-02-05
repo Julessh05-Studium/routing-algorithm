@@ -35,6 +35,12 @@ typedef struct Value {
         }
         return res;
     }
+
+    void add(const WAYPOINT waypoint) {
+        realloc(waypoints, sizeof(WAYPOINT) * (size + 1));
+        waypoints[size] = waypoint;
+        size++;
+    }
 } VALUE;
 
 typedef struct Dictionary {
