@@ -4,6 +4,9 @@ project(routing_algorithm C)
 set(CMAKE_C_STANDARD 23)
 
 add_executable(routing_algorithm main.c
-        io.c
-        io.h
-        dictionary.h)
+        objects/dictionary.h
+        algo.c
+        algo.h
+        objects/route.h
+        objects/dictionary.c
+        objects/route.c)
