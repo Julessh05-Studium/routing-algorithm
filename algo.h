@@ -8,11 +8,16 @@
 #include "objects/dictionary.h"
 #include "objects/route.h"
 
+/*
+ * The base pathfinding algorithm
+ * dict is a dictionary of all waypoints,
+ * start is the name of the city, the user wants to start in,
+ * target is the algorithm's destination
+ */
 void dijkstra(
     DICTIONARY *dict,
     const char *start,
-    const char *target,
-    ROUTE *route
+    const char *target
 );
 
 /* OPTIONAL */

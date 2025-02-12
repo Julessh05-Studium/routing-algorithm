@@ -34,5 +34,4 @@ void print_route(const ROUTE *route) {
 void free_route(ROUTE *route) {
     free(route->waypoints);
     route->length = 0;
-    free(route);
 }

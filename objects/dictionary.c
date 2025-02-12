@@ -8,15 +8,16 @@
 
 /* VALUE FUNCTIONS */
 
-WAYPOINT get_nearest(VALUE value, DICTIONARY *dict) {
+
+WAYPOINT get_nearest(const VALUE value, DICTIONARY *dict) {
     int smallest_distance = -1;
     WAYPOINT res = {};
     for (int i = 0; i < value.size; ++i) {
-        WAYPOINT current_waypoint = value.waypoints[i];
+        const WAYPOINT current_waypoint = value.waypoints[i];
         if (smallest_distance == -1) {
             smallest_distance = current_waypoint.distance;
         }
-        if (current_waypoint.distance < smallest_distance && dict->get_key(current_waypoint.city.name)->visited) {
+        if (current_waypoint.distance < smallest_distance && get_key(dict, current_waypoint.city.name)->visited) {
             smallest_distance = current_waypoint.distance;
             res = current_waypoint;
         }
@@ -57,5 +58,4 @@ void free_dict_mem(DICTIONARY *dict) {
     free(dict->keys);
     free(dict->values);
     dict->size = 0;
-    free(dict);
 }

@@ -9,25 +9,25 @@
 void dijkstra(
     DICTIONARY *dict,
     const char *start,
-    const char *target,
-    ROUTE *route
+    const char *target
 ) {
+    ROUTE route = {};
     printf("Starting from %s\n", start);
-    WAYPOINT w = dict->get(start)->get_nearest(dict);
+    WAYPOINT w = get_nearest(*get(dict, start), dict);
     CITY current = w.destination;
     current.visited = true;
-    route->append(w);
+    append_to_route(&route, w);
     bool reached = false;
     do {
         if (current.name == target) {
             reached = true;
             break;
         }
-        w = dict->get(current.name)->get_nearest(dict);
+        w = get_nearest(*get(dict, target), dict);
         current = w.destination;
         current.visited = true;
-        route->append(w);
+        append_to_route(&route, w);
     } while (!reached);
     printf("Target %s reached:\n", target);
-    route->print();
+    print_route(&route);
 }
