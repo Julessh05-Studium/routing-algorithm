@@ -25,6 +25,17 @@ WAYPOINT get_nearest(const VALUE value, DICTIONARY *dict) {
     return res;
 }
 
+bool add(VALUE *value, const WAYPOINT waypoint) {
+    WAYPOINT *tmp = realloc(value->waypoints, sizeof(WAYPOINT) * (value->size + 1));
+    if (tmp == NULL) {
+        return false;
+    }
+    value->waypoints = tmp;
+    value->waypoints[value->size] = waypoint;
+    value->size += 1;
+    return true;
+}
+
 /* DICTIONARY FUNCTIONS */
 
 void add_to_dictionary(DICTIONARY *dict, const CITY key, const VALUE value) {
