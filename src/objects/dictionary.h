@@ -5,6 +5,8 @@
 #ifndef DICTIONARY_H
 #define DICTIONARY_H
 
+#include <stdbool.h>
+
 /* STRUCTS */
 
 /*
@@ -39,8 +41,8 @@ typedef struct Value {
  */
 typedef struct Dictionary {
     int size;
-    CITY keys[];
-    VALUE values[];
+    CITY **keys;
+    VALUE **values;
 } DICTIONARY = {.keys = {}, .values = {}, .size = 0};
 
 /* FUNCTIONS */
@@ -52,6 +54,23 @@ typedef struct Dictionary {
  * Passing a specific value implicitly means searching for the nearest waypoint to the city which has been the key to the passed value.
  */
 WAYPOINT get_nearest(VALUE value, DICTIONARY *dict);
+
+/**
+ * Removes a single city, which is specified by the name passed to the function,
+ * from the values waypoints
+ * @param value Value to remove something from
+ * @param city The name of the city removing
+ */
+bool remove_from_val(VALUE value, const char *city);
+
+/**
+ * Removes a single city, which is specified by the name passed to the function,
+ * and its asserted values from the dictionary
+ * from the dictionary
+ * @param dict the dictionary to remove something from
+ * @param city The name of the city removing
+ */
+bool remove_from_dict(DICTIONARY *dict, const char *city);
 
 // DICTIONARY FUNCTIONS
 
@@ -68,7 +87,7 @@ CITY *get_key(DICTIONARY *dict, const char *city);
 /*
  * Returns the value for a passed city name
  */
-VALUE *get(DICTIONARY *dict, const char *city);
+VALUE *get(const DICTIONARY *dict, const char *city);
 
 /*
  * Frees the memory of the dictionary
