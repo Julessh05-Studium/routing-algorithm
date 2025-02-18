@@ -52,9 +52,8 @@ void dijkstra(
     // Copy cities to array
     CITY *all_cities = malloc(sizeof(CITY) * DICT_SIZE);
     int all_cities_size = 0;
-    for (int i = 0; i < DICT_SIZE; i++) {
-        all_cities[i] = *dict->keys[i];
-        all_cities_size++;
+    for (; all_cities_size < DICT_SIZE; all_cities_size++) {
+        all_cities[all_cities_size] = *dict->keys[all_cities_size];
     }
 
     // Create routes array for all routes
@@ -62,15 +61,16 @@ void dijkstra(
 
     for (int i = 0; i < all_cities_size; i++) {
         // create route to every city
-        ROUTE route = {};
-        route.destination = all_cities[i];
+        ROUTE *route = malloc(sizeof(ROUTE));
+        route->destination = all_cities[i];
         // set length to 0 if start and -1 if undefined
         if (all_cities[i].name == start) {
-            route.length = 0;
+            route->length = 0;
         } else {
-            route.length = -1;
+            route->length = -1;
         }
-        routes[i] = route;
+        // TODO: malloc
+        routes[i] = *route;
     }
 
     const WAYPOINT *start_neighbors = get(dict, start)->waypoints;
@@ -81,7 +81,8 @@ void dijkstra(
 
         // Restructure array and remove start city
         const CITY *tmp = all_cities;
-        realloc(all_cities, sizeof(CITY) * all_cities_size--);
+        CITY *tmp_p = realloc(all_cities, sizeof(CITY) * --all_cities_size);
+        all_cities = tmp_p;
         int k = 0;
         for (int j = 1; j < all_cities_size; j++) {
             if (all_cities[j].name == start) {
@@ -111,7 +112,8 @@ void dijkstra(
 
         // Restructure array and remove current city
         const CITY *tmp = all_cities;
-        realloc(all_cities, sizeof(CITY) * all_cities_size--);
+        CITY *tmp_p = realloc(all_cities, sizeof(CITY) * --all_cities_size);
+        all_cities = tmp_p;
         int k = 0;
         for (int j = 1; j < all_cities_size; j++) {
             if (all_cities[j].name == sr_dest.name) {
@@ -129,6 +131,9 @@ void dijkstra(
     print_route(target_route);
 
     // Free mem
-    free(all_cities);
+    for (int i = 0; i < DICT_SIZE; i++) {
+        free_route(&routes[i]);
+    }
     free(routes);
+    free(all_cities);
 }
