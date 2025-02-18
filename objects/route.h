@@ -15,7 +15,7 @@
 typedef struct Route {
     WAYPOINT *waypoints;
     int length;
-} ROUTE = {.waypoints = {}, .length = 0};
+} ROUTE;
 
 /* FUNCTIONS */
 
