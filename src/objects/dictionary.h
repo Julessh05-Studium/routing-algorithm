@@ -98,7 +98,6 @@ CITY *get_key(const DICTIONARY *dict, const char *city);
 /**
  * Returns the value for a passed city name
  */
-VALUE *get(const DICTIONARY *dict, const char *city);
 VALUE *get_value(const DICTIONARY *dict, const char *city);
 
 /**

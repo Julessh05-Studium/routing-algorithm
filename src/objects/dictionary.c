@@ -4,7 +4,9 @@
 
 #include "dictionary.h"
 
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 /* VALUE FUNCTIONS */
 
@@ -23,6 +25,18 @@ WAYPOINT get_nearest(const VALUE value, DICTIONARY *dict) {
         }
     }
     return res;
+}
+
+bool add(VALUE *value, const WAYPOINT waypoint) {
+    WAYPOINT *tmp =
+            realloc(value->waypoints, sizeof(WAYPOINT) * (value->size + 1));
+    if (tmp == NULL) {
+        return false;
+    }
+    value->waypoints = tmp;
+    value->waypoints[value->size] = waypoint;
+    value->size += 1;
+    return true;
 }
 
 bool remove_from_val(VALUE value, const char *city) {
@@ -68,13 +82,26 @@ bool remove_from_dict(DICTIONARY *dict, const char *city) {
 
 /* DICTIONARY FUNCTIONS */
 
-void add_to_dictionary(DICTIONARY *dict, const CITY key, const VALUE value) {
+bool add_to_dictionary(DICTIONARY *dict, CITY *key, VALUE *value) {
     const int size = dict->size;
-    realloc(dict->keys, sizeof(CITY) * (size + 1));
-    dict->keys[size] = key;
-    realloc(dict->values, sizeof(struct Value) * (size + 1));
+
+    CITY *tmp_city = realloc(dict->keys, sizeof(*dict->keys) * (size + 1));
+    if (tmp_city == NULL) {
+        return false;
+    }
+    dict->keys = tmp_city;
+
+    VALUE **tmp_values = realloc(dict->values, sizeof(VALUE **) * (size + 1));
+    if (tmp_values == NULL) {
+        free(tmp_city);
+        return false;
+    }
+    dict->values = tmp_values;
+
+    dict->keys[size] = *key;
     dict->values[size] = value;
     dict->size++;
+    return true;
 }
 
 CITY *get_key(const DICTIONARY *dict, const char *city) {
@@ -86,9 +113,12 @@ CITY *get_key(const DICTIONARY *dict, const char *city) {
     return nullptr;
 }
 
-VALUE *get(const DICTIONARY *dict, const char *city) {
+VALUE *get_value(const DICTIONARY *dict, const char *city) {
+    if (dict == nullptr || city == nullptr) {
+        return nullptr;
+    }
     for (int i = 0; i < dict->size; ++i) {
-        if (city == dict->keys[i]->name) {
+        if (strcmp(city, dict->keys[i].name) == 0) {
             return dict->values[i];
         }
     }
