@@ -9,4 +9,8 @@ add_executable(routing_algorithm main.c
         algo.h
         objects/route.h
         objects/dictionary.c
-        objects/route.c)
+        objects/route.c
+        parser.c
+        out.h
+        out.c
+)
