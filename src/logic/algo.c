@@ -53,7 +53,7 @@ void dijkstra(
     CITY *all_cities = malloc(sizeof(CITY) * DICT_SIZE);
     int all_cities_size = 0;
     for (; all_cities_size < DICT_SIZE; all_cities_size++) {
-        all_cities[all_cities_size] = *dict->keys[all_cities_size];
+        all_cities[all_cities_size] = dict->keys[all_cities_size];
     }
 
     // Create routes array for all routes
@@ -73,8 +73,8 @@ void dijkstra(
         routes[i] = *route;
     }
 
-    const WAYPOINT *start_neighbors = get(dict, start)->waypoints;
-    for (int i = 0; i < get(dict, start)->size; i++) {
+    const WAYPOINT *start_neighbors = get_value(dict, start)->waypoints;
+    for (int i = 0; i < get_value(dict, start)->size; i++) {
         // Calculate distance to every neighbor of start
         ROUTE *r = get_route_for_city(routes, DICT_SIZE, start_neighbors[i].destination.name);
         r->length = start_neighbors[i].distance;
@@ -99,7 +99,7 @@ void dijkstra(
         // Get waypoint with the smallest distance to
         const ROUTE *sr = get_route_min_dist(routes, DICT_SIZE);
         const CITY sr_dest = sr->destination;
-        const VALUE *v = get(dict, sr_dest.name);
+        const VALUE *v = get_value(dict, sr_dest.name);
         const WAYPOINT *neighbors = v->waypoints;
         for (int i = 0; i < v->size; i++) {
             const int tmp_l = neighbors[i].distance + sr->length;

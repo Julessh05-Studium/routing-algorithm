@@ -5,8 +5,8 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-#include "objects/dictionary.h"
+#include "../objects/dictionary.h"
 
-DICTIONARY* parse(char path[]);
+DICTIONARY *parse(char path[]);
 
 #endif //PARSER_H

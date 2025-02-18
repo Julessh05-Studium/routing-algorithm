@@ -5,7 +5,6 @@
 #ifndef DICTIONARY_H
 #define DICTIONARY_H
 
-#include <stdbool.h>
 
 /* STRUCTS */
 
@@ -53,7 +52,7 @@ typedef struct {
  * Returns the waypoint with the smallest distance in the array of the passed value.
  * Passing a specific value implicitly means searching for the nearest waypoint to the city which has been the key to the passed value.
  */
-WAYPOINT get_nearest(VALUE value, DICTIONARY *dict);
+WAYPOINT get_nearest(const VALUE value, const DICTIONARY *dict);
 
 /**
  * Removes a single city, which is specified by the name passed to the function,
@@ -88,7 +87,7 @@ bool add(VALUE *value, const WAYPOINT waypoint);
 /**
  * Appends a new entry with key and value to the passed dictionary
  */
-bool add_to_dictionary(DICTIONARY *dict, CITY *key, VALUE *value);
+bool add_to_dictionary(DICTIONARY *dict, const CITY *key, VALUE *value);
 
 /**
  * Returns the city struct for a specific city name in the given dictionary

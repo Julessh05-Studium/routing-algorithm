@@ -11,7 +11,7 @@
 /* VALUE FUNCTIONS */
 
 
-WAYPOINT get_nearest(const VALUE value, DICTIONARY *dict) {
+WAYPOINT get_nearest(const VALUE value, const DICTIONARY *dict) {
     int smallest_distance = -1;
     WAYPOINT res = {};
     for (int i = 0; i < value.size; ++i) {
@@ -60,11 +60,11 @@ bool remove_from_val(VALUE value, const char *city) {
 
 bool remove_from_dict(DICTIONARY *dict, const char *city) {
     bool removed = false;
-    CITY **new_cities = malloc(sizeof(CITY) * dict->size - 1);
+    CITY *new_cities = malloc(sizeof(CITY) * dict->size - 1);
     VALUE **new_values = malloc(sizeof(VALUE) * dict->size - 1);
     int j = 0;
     for (int i = 0; i < dict->size - 1; ++i) {
-        if (dict->keys[j]->name != city) {
+        if (dict->keys[j].name != city) {
             new_cities[i] = dict->keys[j];
             new_values[i] = dict->values[j];
         } else {
@@ -82,7 +82,7 @@ bool remove_from_dict(DICTIONARY *dict, const char *city) {
 
 /* DICTIONARY FUNCTIONS */
 
-bool add_to_dictionary(DICTIONARY *dict, CITY *key, VALUE *value) {
+bool add_to_dictionary(DICTIONARY *dict, const CITY *key, VALUE *value) {
     const int size = dict->size;
 
     CITY *tmp_city = realloc(dict->keys, sizeof(*dict->keys) * (size + 1));
@@ -106,8 +106,8 @@ bool add_to_dictionary(DICTIONARY *dict, CITY *key, VALUE *value) {
 
 CITY *get_key(const DICTIONARY *dict, const char *city) {
     for (int i = 0; i < dict->size; ++i) {
-        if (city == dict->keys[i]->name) {
-            return dict->keys[i];
+        if (city == dict->keys[i].name) {
+            return &dict->keys[i];
         }
     }
     return nullptr;

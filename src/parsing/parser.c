@@ -10,8 +10,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "out.h"
-
 #define BUFFER_SIZE 32
 
 int dist;
@@ -49,7 +47,8 @@ bool add_wp_to_dict(DICTIONARY *dictionary, CITY *start_city,
 
   add(val,
       (WAYPOINT){
-          .city = *start_city, .destination = *dest_city, .distance = dist});
+        .city = *start_city, .destination = *dest_city, .distance = dist
+      });
   return true;
 }
 
