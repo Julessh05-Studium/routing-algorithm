@@ -3,6 +3,8 @@
 //
 
 #include "route.h"
+
+#include <stdio.h>
 #include <stdlib.h>
 
 void append_to_route(ROUTE *route, const WAYPOINT waypoint) {
@@ -30,6 +32,11 @@ void print_route(const ROUTE *route) {
     }
     printf("Total distance: %dkm\n", get_distance(route));
 }
+
+WAYPOINT *get_last_eof(const ROUTE *route) {
+    return &route->waypoints[route->length - 1];
+}
+
 
 void free_route(ROUTE *route) {
     free(route->waypoints);

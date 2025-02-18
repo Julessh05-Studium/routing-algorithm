@@ -14,3 +14,10 @@ add_executable(routing_algorithm main.c
         out.h
         out.c
 )
+add_executable(routing_algorithm src/main.c
+        src/objects/dictionary.h
+        src/logic/algo.c
+        src/logic/algo.h
+        src/objects/route.h
+        src/objects/dictionary.c
+        src/objects/route.c)

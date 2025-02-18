@@ -5,6 +5,8 @@
 #ifndef DICTIONARY_H
 #define DICTIONARY_H
 
+#include <stdbool.h>
+
 /* STRUCTS */
 
 /**
@@ -54,6 +56,23 @@ typedef struct {
 WAYPOINT get_nearest(VALUE value, DICTIONARY *dict);
 
 /**
+ * Removes a single city, which is specified by the name passed to the function,
+ * from the values waypoints
+ * @param value Value to remove something from
+ * @param city The name of the city removing
+ */
+bool remove_from_val(VALUE value, const char *city);
+
+/**
+ * Removes a single city, which is specified by the name passed to the function,
+ * and its asserted values from the dictionary
+ * from the dictionary
+ * @param dict the dictionary to remove something from
+ * @param city The name of the city removing
+ */
+bool remove_from_dict(DICTIONARY *dict, const char *city);
+
+/**
  * Adds a waypoint to the Value waypoints array.
  * This function reallocates memory, which can lead to memory loss.
  * Please check the return value and free memory if reallocation fails.
@@ -79,6 +98,7 @@ CITY *get_key(const DICTIONARY *dict, const char *city);
 /**
  * Returns the value for a passed city name
  */
+VALUE *get(const DICTIONARY *dict, const char *city);
 VALUE *get_value(const DICTIONARY *dict, const char *city);
 
 /**
