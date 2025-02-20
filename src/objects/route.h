@@ -15,6 +15,7 @@
 typedef struct Route {
     CITY destination;
     WAYPOINT *waypoints;
+    int distance;
     int length;
 } ROUTE;
 
@@ -26,13 +27,6 @@ typedef struct Route {
  * @param waypoint the waypoint to append to the route
  */
 void append_to_route(ROUTE *route, WAYPOINT waypoint);
-
-/**
- * Returns the complete distance in the route
- * @param route the route to calculate the distance for
- * @return the distance as int
- */
-int get_distance(const ROUTE *route);
 
 /**
  * Prints the route to the console with all it's waypoints and distance
