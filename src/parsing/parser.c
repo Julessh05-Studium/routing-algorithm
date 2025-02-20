@@ -186,7 +186,6 @@ DICTIONARY *parse(char path[]) {
     return nullptr;
   }
 
-  int current_char;
   char *current_word = malloc(32 * sizeof(char));
   if (current_word == NULL || !malloc_start_dest_city()) {
     fclose(map_file);
@@ -197,7 +196,9 @@ DICTIONARY *parse(char path[]) {
   int buf_size = BUFFER_SIZE;
   init_csv_line();
 
-  while ((current_char = getc(map_file)) != EOF) {
+  while (true) {
+    const int current_char = getc(map_file);
+
     if (char_index == BUFFER_SIZE - 1) {
       buf_size += BUFFER_SIZE;
       char *tmp = realloc(current_word, buf_size);
@@ -208,7 +209,7 @@ DICTIONARY *parse(char path[]) {
       current_word = tmp;
     }
 
-    if (current_char == '\n') {
+    if (current_char == '\n' || current_char == EOF) {
       add_wp_to_dict(dictionary, start_city, dest_city, get_distance_from_str(current_word));
 
       if (start_city == NULL || dest_city == NULL || !malloc_start_dest_city()) {
@@ -217,6 +218,9 @@ DICTIONARY *parse(char path[]) {
       }
 
       init_csv_line();
+      if (current_char == EOF) {
+        break;
+      }
       continue;
     }
 
