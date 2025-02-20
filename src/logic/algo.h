@@ -9,7 +9,7 @@
 
 /**
  * The base pathfinding algorithm
- * dict is a dictionary of all waypoints,
+ * dict is a dictionary of all connections,
  * start is the name of the city, the user wants to start in,
  * target is the algorithm's destination
  */

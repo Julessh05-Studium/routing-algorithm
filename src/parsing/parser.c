@@ -39,7 +39,7 @@ void next_row() {
  * Adds the given start and destination with the given distance to the given
  * dictionary.
  *
- * @param dictionary global waypoints dictionary
+ * @param dictionary global connections dictionary
  * @param start_city start city
  * @param dest_city destination city
  * @param dist distance between start and destination city
@@ -57,15 +57,15 @@ bool add_wp_to_dict(DICTIONARY *dictionary, CITY *start_city,
       return false;
     }
 
-    val->waypoints = malloc(sizeof(WAYPOINT));
-    if (val->waypoints == NULL) {
+    val->connections = malloc(sizeof(CONNECTION));
+    if (val->connections == NULL) {
       return false;
     }
     add_to_dictionary(dictionary, start_city, val);
   }
 
   add(val,
-      (WAYPOINT){
+      (CONNECTION){
           .city = *start_city, .destination = *dest_city, .distance = dist});
   return true;
 }
