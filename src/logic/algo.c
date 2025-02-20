@@ -94,6 +94,7 @@ void dijkstra(
     for (int i = 0; i < all_cities_size; i++) {
         ROUTE *route = malloc(sizeof(ROUTE));
         route->destination = all_cities[i];
+        route->waypoints = malloc(sizeof(WAYPOINT));
         // set length to 0 if start and -1 if undefined
         if (strcmp(all_cities[i].name, start) == 0) {
             route->distance = 0;
@@ -116,11 +117,16 @@ void dijkstra(
             ROUTE *cr = get_route_for_city(routes, DICT_SIZE, neighbors[i].destination.name);
             // Set new length, if either is not set, or is greater
             if (cr->distance < 0 || cr->distance > tmp_l) {
+                ROUTE *r = malloc(sizeof(ROUTE));
+                for (int j = 0; j < sr->length; j++) {
+                    append_to_route(r, sr->waypoints[j]);
+                }
+                append_to_route(r, neighbors[i]);
+                cr->waypoints = r->waypoints;
                 cr->distance = tmp_l;
-                append_to_route(cr, neighbors[i]);
+                cr->length = r->length;
             }
         }
-        printf("Test");
 
         // Restructure array and mark current city as visited
         for (int j = 0; j < all_cities_size; j++) {
@@ -133,7 +139,7 @@ void dijkstra(
     // Print route to target
     const ROUTE *target_route = get_route_for_city(routes, DICT_SIZE, target);
     printf("Target %s reached:\n", target);
-    print_route(target_route);
+    print_route(target_route, start);
 
     // Free mem
     for (int i = 0; i < DICT_SIZE; i++) {

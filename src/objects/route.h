@@ -31,8 +31,9 @@ void append_to_route(ROUTE *route, WAYPOINT waypoint);
 /**
  * Prints the route to the console with all it's waypoints and distance
  * @param route the route to print out to the console
+ * @param start the start point of the route
  */
-void print_route(const ROUTE *route);
+void print_route(const ROUTE *route, const char *start);
 
 /**
  * Returns the last parameter of the route
