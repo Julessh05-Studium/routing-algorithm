@@ -106,7 +106,7 @@ bool add_to_dictionary(DICTIONARY *dict, const CITY *key, VALUE *value) {
 
 CITY *get_key(const DICTIONARY *dict, const char *city) {
     for (int i = 0; i < dict->size; ++i) {
-        if (city == dict->keys[i].name) {
+        if (strcmp(city, dict->keys[i].name)) {
             return &dict->keys[i];
         }
     }

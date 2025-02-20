@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
             }
             i++;
         }
-        if (strcmp(argv[i], MAP_LONG) == 0 || strcmp(argv[i], MAP_SHORT) == 0) {
+        if (strcmp(argv[i], TARGET_LONG) == 0 || strcmp(argv[i], TARGET_SHORT) == 0) {
             target = argv[i + 1];
             if (target == NULL) {
                 return EXIT_FAILURE;
