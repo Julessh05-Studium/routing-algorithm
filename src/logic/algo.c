@@ -73,7 +73,7 @@ ROUTE *get_route_for_city(ROUTE *routes, const int size, const char *name) {
     return nullptr;
 }
 
-void dijkstra(
+int dijkstra(
     const DICTIONARY *dict,
     const char *start,
     const char *target,
@@ -144,6 +144,7 @@ void dijkstra(
     const ROUTE *target_route = get_route_for_city(routes, DICT_SIZE, target);
     printf("Target %s reached:\n", target);
     print_route(target_route, start);
+    const int distance = target_route->distance;
 
     // Free mem
     for (int i = 0; i < DICT_SIZE; i++) {
@@ -151,4 +152,5 @@ void dijkstra(
     }
     free(routes);
     free(all_cities);
+    return distance;
 }

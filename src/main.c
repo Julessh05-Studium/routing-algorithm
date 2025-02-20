@@ -8,6 +8,8 @@
 #include "objects/dictionary.h"
 #include "parsing/parser.h"
 
+#include "reallife_application/fuel_consumption.h"
+
 #define MAP_LONG "--map"
 #define MAP_SHORT "-m"
 #define START_LONG "--start"
@@ -87,6 +89,8 @@ int main(int argc, char *argv[]) {
         );
     }
 
-    dijkstra(dictionary, start, target, debug);
+    const int distance = dijkstra(dictionary, start, target, debug);
+    const double liter = calculate_fuel_consumption(distance);
+    calculate_liter_price(liter);
     return EXIT_SUCCESS;
 }

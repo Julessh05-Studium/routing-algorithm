@@ -13,7 +13,7 @@
  * start is the name of the city, the user wants to start in,
  * target is the algorithm's destination
  */
-void dijkstra(
+int dijkstra(
     const DICTIONARY *dict,
     const char *start,
     const char *target,
