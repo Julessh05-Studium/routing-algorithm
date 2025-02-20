@@ -14,10 +14,10 @@
 
 int csv_column;
 int char_column_index;
-CITY *start_city;
-CITY *dest_city;
-FILE *map_file;
-DICTIONARY *dictionary;
+CITY* start_city;
+CITY* dest_city;
+FILE* map_file;
+DICTIONARY* dictionary;
 
 /**
  * Initializes the global variables for parsing a new csv row.
@@ -44,13 +44,13 @@ void next_column() {
  * @param dest_city destination city
  * @param dist distance between start and destination city
  */
-bool add_wp_to_dict(DICTIONARY *dictionary, CITY *start_city,
-                    const CITY *dest_city, const int dist) {
+bool add_wp_to_dict(DICTIONARY* dictionary, const CITY* start_city,
+                    const CITY* dest_city, const int dist) {
   if (start_city == NULL || dest_city == NULL) {
     return false;
   }
 
-  VALUE *val = get_value(dictionary, start_city->name);
+  VALUE* val = get_value(dictionary, start_city->name);
   if (val == NULL) {
     val = malloc(sizeof(VALUE));
     if (val == NULL) {
@@ -73,7 +73,7 @@ bool add_wp_to_dict(DICTIONARY *dictionary, CITY *start_city,
 /**
  * Frees given parameters and closes file stream.
  */
-void free_mem(FILE *file, char *val) {
+void free_mem(FILE* file, char* val) {
   free(val);
   fclose(file);
 }
@@ -105,7 +105,7 @@ bool malloc_start_dest_city() {
  * @param city city to set the name
  * @return a bool if the name was set successfully
  */
-bool set_city_name(const char *name, CITY *city) {
+bool set_city_name(const char* name, CITY* city) {
   city->name = malloc(strlen(name) + 1);
   if (city->name == NULL) {
     print_error_general("Name of city is NULL");
@@ -121,11 +121,11 @@ bool set_city_name(const char *name, CITY *city) {
  * @param val string to convert
  * @return the converted integer
  */
-int get_distance_from_str(const char *val) {
+int get_distance_from_str(const char* val) {
   char tmp[char_column_index + 1];
   strncpy(tmp, val + '\0', char_column_index);
   tmp[char_column_index] = '\0';
-  return (int) strtoumax(tmp, nullptr, 10);
+  return strtoumax(tmp, nullptr, 10);
 }
 
 /**
@@ -134,7 +134,7 @@ int get_distance_from_str(const char *val) {
  * @param current_word
  * @return
  */
-bool handle_csv_column(const char *current_word) {
+bool handle_csv_column(const char* current_word) {
   switch (csv_column) {
     case 0: {
       set_city_name(current_word, start_city);
@@ -159,7 +159,7 @@ bool handle_csv_column(const char *current_word) {
  * @param path path to file map file.
  * @return a bool if opening file and allocating memory for dictionary succeeded.
  */
-bool init_parser(char path[]) {
+bool init_parser(const char path[]) {
   map_file = fopen(path, "r");
   if (map_file == NULL) {
     fclose(map_file);
@@ -183,13 +183,14 @@ bool init_parser(char path[]) {
  * @param current_word string to resize.
  * @return true if reallocation succeeded, false otherwise.
  */
-bool resize_buffer(int *buf_size, char **current_word) {
-  if (current_word == nullptr || *current_word == nullptr || buf_size == nullptr) {
+bool resize_buffer(int* buf_size, char** current_word) {
+  if (current_word == nullptr || *current_word == nullptr || buf_size ==
+      nullptr) {
     return false;
   }
 
   *buf_size += BUFFER_SIZE;
-  char *tmp = realloc(*current_word, *buf_size);
+  char* tmp = realloc(*current_word, *buf_size);
   if (tmp == NULL) {
     return false;
   }
@@ -205,12 +206,12 @@ bool resize_buffer(int *buf_size, char **current_word) {
  * @param path absolute path to the file
  * @return a dictionary with data from the map.
  */
-DICTIONARY *parse(char path[]) {
+DICTIONARY* parse(const char path[]) {
   if (!init_parser(path)) {
     return nullptr;
   }
 
-  char *current_word = malloc(32 * sizeof(char));
+  char* current_word = malloc(32 * sizeof(char));
   if (current_word == NULL || !malloc_start_dest_city()) {
     fclose(map_file);
     free(dictionary);
@@ -240,7 +241,8 @@ DICTIONARY *parse(char path[]) {
 
       add_wp_to_dict(dictionary, start_city, dest_city, dist_str);
 
-      if (start_city == NULL || dest_city == NULL || !malloc_start_dest_city()) {
+      if (start_city == NULL || dest_city == NULL || !
+          malloc_start_dest_city()) {
         free_mem(map_file, current_word);
         return nullptr;
       }
@@ -270,7 +272,7 @@ DICTIONARY *parse(char path[]) {
       continue;
     }
 
-    current_word[char_column_index++] = (char) current_char;
+    current_word[char_column_index++] = (char)current_char;
     increment_char_index();
   }
 
