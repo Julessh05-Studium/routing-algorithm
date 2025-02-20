@@ -18,21 +18,21 @@ typedef struct {
 } CITY;
 
 /**
- * struct representing a waypoint, which includes a start city,
+ * struct representing a connection, which includes a start city,
  * the destination and the distance between those two
  */
 typedef struct {
     CITY city;
     CITY destination;
     int distance;
-} WAYPOINT;
+} CONNECTION;
 
 /**
- * A value represents an array of waypoints in a dictionary
+ * A value represents an array of connections in a dictionary
  */
 typedef struct {
     int size;
-    WAYPOINT *waypoints;
+    CONNECTION *connections;
 } VALUE;
 
 /**
@@ -49,14 +49,14 @@ typedef struct {
 // VALUE FUNCTIONS
 
 /**
- * Returns the waypoint with the smallest distance in the array of the passed value.
- * Passing a specific value implicitly means searching for the nearest waypoint to the city which has been the key to the passed value.
+ * Returns the connection with the smallest distance in the array of the passed value.
+ * Passing a specific value implicitly means searching for the nearest connection to the city which has been the key to the passed value.
  */
-WAYPOINT get_nearest(const VALUE value, const DICTIONARY *dict);
+CONNECTION get_nearest(const VALUE value, const DICTIONARY *dict);
 
 /**
  * Removes a single city, which is specified by the name passed to the function,
- * from the values waypoints
+ * from the values connections
  * @param value Value to remove something from
  * @param city The name of the city removing
  */
@@ -72,15 +72,15 @@ bool remove_from_val(VALUE value, const char *city);
 bool remove_from_dict(DICTIONARY *dict, const char *city);
 
 /**
- * Adds a waypoint to the Value waypoints array.
+ * Adds a connection to the Value connections array.
  * This function reallocates memory, which can lead to memory loss.
  * Please check the return value and free memory if reallocation fails.
  *
- * @param value value with waypoints array to add waypoint to
- * @param waypoint waypoint to add.
+ * @param value value with connections array to add connection to
+ * @param connection connection to add.
  * @return true if action succeeded, false otherwise.
  */
-bool add(VALUE *value, const WAYPOINT waypoint);
+bool add(VALUE *value, const CONNECTION connection);
 
 // DICTIONARY FUNCTIONS
 
