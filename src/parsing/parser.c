@@ -218,6 +218,7 @@ DICTIONARY *parse(char path[]) {
   }
 
   int buf_size = BUFFER_SIZE;
+  bool first_column_printable_char = false;
   init_csv_line();
 
   while (true) {
@@ -232,6 +233,7 @@ DICTIONARY *parse(char path[]) {
 
     if (current_char == '\n' || current_char == EOF) {
       line_number++;
+      first_column_printable_char = false;
       const int dist_str = get_distance_from_str(current_word);
       if (dist_str == 0) {
         print_error_general("Distance has to be 1 or greater");
@@ -254,6 +256,7 @@ DICTIONARY *parse(char path[]) {
     }
 
     if (current_char == ',') {
+      first_column_printable_char = false;
       if (char_column_index == 0) {
         print_error_syntax("City name is NULL");
         return nullptr;
@@ -270,7 +273,10 @@ DICTIONARY *parse(char path[]) {
       continue;
     }
 
-    current_word[char_column_index++] = (char) current_char;
+    if (current_char > 33 || first_column_printable_char) {
+      current_word[char_column_index++] = (char) current_char;
+      first_column_printable_char = true;
+    }
     increment_char_index();
   }
 
