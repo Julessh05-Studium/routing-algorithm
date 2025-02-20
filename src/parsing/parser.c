@@ -46,19 +46,19 @@ void next_column() {
  */
 bool add_wp_to_dict(DICTIONARY *dictionary, CITY *start_city,
                     const CITY *dest_city, const int dist) {
-  if (start_city == NULL || dest_city == NULL) {
+  if (start_city == nullptr || dest_city == nullptr) {
     return false;
   }
 
   VALUE *val = get_value(dictionary, start_city->name);
-  if (val == NULL) {
+  if (val == nullptr) {
     val = malloc(sizeof(VALUE));
-    if (val == NULL) {
+    if (val == nullptr) {
       return false;
     }
 
     val->connections = malloc(sizeof(CONNECTION));
-    if (val->connections == NULL) {
+    if (val->connections == nullptr) {
       return false;
     }
     add_to_dictionary(dictionary, start_city, val);
@@ -85,12 +85,12 @@ void free_mem(FILE *file, char *val) {
  */
 bool malloc_start_dest_city() {
   start_city = malloc(sizeof(CITY));
-  if (start_city == NULL) {
+  if (start_city == nullptr) {
     return false;
   }
 
   dest_city = malloc(sizeof(CITY));
-  if (dest_city == NULL) {
+  if (dest_city == nullptr) {
     free(start_city);
     return false;
   }
@@ -107,7 +107,7 @@ bool malloc_start_dest_city() {
  */
 bool set_city_name(const char *name, CITY *city) {
   city->name = malloc(strlen(name) + 1);
-  if (city->name == NULL) {
+  if (city->name == nullptr) {
     print_error_general("Name of city is NULL");
     return false;
   }
