@@ -16,7 +16,8 @@
 void dijkstra(
     const DICTIONARY *dict,
     const char *start,
-    const char *target
+    const char *target,
+    bool debug
 );
 
 /* OPTIONAL */

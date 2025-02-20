@@ -76,7 +76,8 @@ ROUTE *get_route_for_city(ROUTE *routes, const int size, const char *name) {
 void dijkstra(
     const DICTIONARY *dict,
     const char *start,
-    const char *target
+    const char *target,
+    bool debug
 ) {
     // constant var for dictionary size
     const int DICT_SIZE = dict->size;
@@ -125,6 +126,9 @@ void dijkstra(
                 cr->waypoints = r->waypoints;
                 cr->distance = tmp_l;
                 cr->length = r->length;
+                if (debug) {
+                    print_route(cr, start);
+                }
             }
         }
 
