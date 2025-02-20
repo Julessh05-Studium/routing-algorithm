@@ -8,14 +8,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-
-double calculate_fuel_consumption(const int distance) {
-    const double fe = query_fuel_efficiency();
-    const double fq = fe * distance / 100;
-    printf("You need %.2fl of fuel for this trip\n", fq);
-    return fq;
-}
-
+/**
+ * Queries the user for the fuel efficiency of their car
+ * @return the fuel efficiency as l/km
+ */
 double query_fuel_efficiency() {
     printf("Enter the fuel efficiency of your car to get the fuel consumption for this route, or press n to exit: ");
     char *fuel_consumption = malloc(sizeof(char) * 10);
@@ -29,13 +25,18 @@ double query_fuel_efficiency() {
     return fe;
 }
 
-double calculate_liter_price(const double liter) {
-    const double p = query_liter_price();
-    const double cp = p * liter;
-    printf("The fuel for this trip will cost %.2f€\n", cp);
-    return cp;
+
+double calculate_fuel_consumption(const int distance) {
+    const double fe = query_fuel_efficiency();
+    const double fq = fe * distance / 100;
+    printf("You need %.2fl of fuel for this trip\n", fq);
+    return fq;
 }
 
+/**
+ * Queries the user for the price per liter in euro
+ * @return the price per liter in euro
+ */
 double query_liter_price() {
     printf("Enter the price per liter, or press n to exit: ");
     char *liter_price = malloc(sizeof(char) * 10);
@@ -47,4 +48,12 @@ double query_liter_price() {
     price = strtof(liter_price, nullptr);
     free(liter_price);
     return price;
+}
+
+
+double calculate_liter_price(const double liter) {
+    const double p = query_liter_price();
+    const double cp = p * liter;
+    printf("The fuel for this trip will cost %.2f€\n", cp);
+    return cp;
 }

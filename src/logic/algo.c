@@ -26,6 +26,12 @@ bool city_visited(const char *city, const CITY *for_cities, const int city_size)
     return false;
 }
 
+/**
+ * Checks for all cities passed in the cities array, if they already have been visited
+ * @param cities The array of cities to check the visited parameter for
+ * @param city_size the size of the passed array
+ * @return whether or not all cities have been visited
+ */
 bool all_cities_visited(const CITY *cities, const int city_size) {
     for (int i = 0; i < city_size; i++) {
         if (!city_visited(cities[i].name, cities, city_size)) {
