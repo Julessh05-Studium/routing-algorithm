@@ -31,7 +31,7 @@ CONNECTION get_nearest(const VALUE value, const DICTIONARY* dict) {
 bool add(VALUE* value, const CONNECTION connection) {
   CONNECTION* tmp =
       realloc(value->connections, sizeof(CONNECTION) * (value->size + 1));
-  if (tmp == NULL) {
+  if (tmp == nullptr) {
     return false;
   }
   value->connections = tmp;
@@ -87,13 +87,13 @@ bool add_to_dictionary(DICTIONARY* dict, const CITY* key, VALUE* value) {
   const int size = dict->size;
 
   CITY* tmp_city = realloc(dict->keys, sizeof(*dict->keys) * (size + 1));
-  if (tmp_city == NULL) {
+  if (tmp_city == nullptr) {
     return false;
   }
   dict->keys = tmp_city;
 
   VALUE** tmp_values = realloc(dict->values, sizeof(VALUE**) * (size + 1));
-  if (tmp_values == NULL) {
+  if (tmp_values == nullptr) {
     free(tmp_city);
     return false;
   }
