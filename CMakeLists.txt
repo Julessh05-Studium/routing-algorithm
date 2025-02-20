@@ -13,6 +13,8 @@ add_executable(routing_algorithm
         src/objects/route.c
         src/parsing/parser.h
         src/parsing/parser.c
+        src/parsing/parser_error_handler.h
+        src/parsing/parser_error_handler.c
         src/reallife_application/fuel_consumption.c
         src/reallife_application/fuel_consumption.h
 )

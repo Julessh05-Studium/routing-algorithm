@@ -3,8 +3,8 @@
 //
 
 #include "parser.h"
+#include "parser_error_handler.h"
 
-#include <assert.h>
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,7 +13,7 @@
 #define BUFFER_SIZE 32
 
 int csv_column;
-int char_index;
+int char_column_index;
 CITY *start_city;
 CITY *dest_city;
 FILE *map_file;
@@ -24,15 +24,15 @@ DICTIONARY *dictionary;
  */
 void init_csv_line() {
   csv_column = 0;
-  char_index = 0;
+  char_column_index = 0;
 }
 
 /**
  * Resets column counter and character counter for reading next line.
  */
-void next_row() {
+void next_column() {
   csv_column++;
-  char_index = 0;
+  char_column_index = 0;
 }
 
 /**
@@ -108,9 +108,10 @@ bool malloc_start_dest_city() {
 bool set_city_name(const char *name, CITY *city) {
   city->name = malloc(strlen(name) + 1);
   if (city->name == NULL) {
+    print_error_general("Name of city is NULL");
     return false;
   }
-  strncpy(city->name, name, char_index);
+  strncpy(city->name, name, char_column_index);
   city->name[strlen(name)] = '\0';
   return true;
 }
@@ -121,9 +122,9 @@ bool set_city_name(const char *name, CITY *city) {
  * @return the converted integer
  */
 int get_distance_from_str(const char *val) {
-  char tmp[char_index + 1];
-  strncpy(tmp, val + '\0', char_index);
-  tmp[char_index] = '\0';
+  char tmp[char_column_index + 1];
+  strncpy(tmp, val + '\0', char_column_index);
+  tmp[char_column_index] = '\0';
   return (int) strtoumax(tmp, nullptr, 10);
 }
 
@@ -144,6 +145,7 @@ bool handle_csv_column(const char *current_word) {
       break;
     }
     default: {
+      print_error_syntax("Map has more than three columns");
       return false;
     }
   }
@@ -161,6 +163,7 @@ bool init_parser(char path[]) {
   map_file = fopen(path, "r");
   if (map_file == NULL) {
     fclose(map_file);
+    print_error_general("Map file could not be opened");
     return false;
   }
 
@@ -170,6 +173,27 @@ bool init_parser(char path[]) {
     return false;
   }
 
+  return true;
+}
+
+/**
+ * Resizes the buffer size of specified string.
+ *
+ * @param buf_size size of the current buffer.
+ * @param current_word string to resize.
+ * @return true if reallocation succeeded, false otherwise.
+ */
+bool resize_buffer(int *buf_size, char **current_word) {
+  if (current_word == nullptr || *current_word == nullptr || buf_size == nullptr) {
+    return false;
+  }
+
+  *buf_size += BUFFER_SIZE;
+  char *tmp = realloc(*current_word, *buf_size);
+  if (tmp == NULL) {
+    return false;
+  }
+  *current_word = tmp;
   return true;
 }
 
@@ -199,18 +223,22 @@ DICTIONARY *parse(char path[]) {
   while (true) {
     const int current_char = getc(map_file);
 
-    if (char_index == BUFFER_SIZE - 1) {
-      buf_size += BUFFER_SIZE;
-      char *tmp = realloc(current_word, buf_size);
-      if (tmp == NULL) {
+    if (char_column_index + 1 > buf_size) {
+      if (!resize_buffer(&buf_size, &current_word)) {
         free_mem(map_file, current_word);
         return nullptr;
       }
-      current_word = tmp;
     }
 
     if (current_char == '\n' || current_char == EOF) {
-      add_wp_to_dict(dictionary, start_city, dest_city, get_distance_from_str(current_word));
+      line_number++;
+      const int dist_str = get_distance_from_str(current_word);
+      if (dist_str == 0) {
+        print_error_general("Distance has to be 1 or greater");
+        return nullptr;
+      }
+
+      add_wp_to_dict(dictionary, start_city, dest_city, dist_str);
 
       if (start_city == NULL || dest_city == NULL || !malloc_start_dest_city()) {
         free_mem(map_file, current_word);
@@ -221,22 +249,29 @@ DICTIONARY *parse(char path[]) {
       if (current_char == EOF) {
         break;
       }
+      reset_char_index();
       continue;
     }
 
     if (current_char == ',') {
-      current_word[char_index] = '\0';
+      if (char_column_index == 0) {
+        print_error_syntax("City name is NULL");
+        return nullptr;
+      }
+
+      current_word[char_column_index] = '\0';
 
       if (!handle_csv_column(current_word)) {
         free_mem(map_file, current_word);
         return nullptr;
       }
 
-      next_row();
+      next_column();
       continue;
     }
 
-    current_word[char_index++] = (char) current_char;
+    current_word[char_column_index++] = (char) current_char;
+    increment_char_index();
   }
 
   free_mem(map_file, current_word);
