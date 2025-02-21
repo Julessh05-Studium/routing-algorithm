@@ -66,12 +66,11 @@ DICTIONARY* check_map(const char* identifier, const char* value) {
 const char* check_start(const char* identifier, const char* value) {
   if (strcmp(identifier, START_LONG) == 0 || strcmp(identifier, START_SHORT) ==
       0) {
-    const char* start = value;
-    if (start == nullptr) {
+    if (value == nullptr || strcmp(value, "") == 0) {
       fprintf(stderr, "a valid start name has to be passed.");
       exit(1);
     }
-    return start;
+    return value;
   }
   return nullptr;
 }
@@ -85,12 +84,11 @@ const char* check_start(const char* identifier, const char* value) {
 const char* check_target(const char* identifier, const char* value) {
   if (strcmp(identifier, TARGET_LONG) == 0 || strcmp(identifier, TARGET_SHORT)
       == 0) {
-    const char* target = value;
-    if (target == nullptr) {
+    if (value == nullptr || strcmp(value, "") == 0) {
       fprintf(stderr, "a valid target name has to be passed.");
       exit(1);
     }
-    return target;
+    return value;
   }
   return nullptr;
 }
@@ -98,7 +96,7 @@ const char* check_target(const char* identifier, const char* value) {
 const char* check_waypoint(const char* identifier, const char* value) {
   if (strcmp(identifier, WAYPOINT_LONG) == 0 || strcmp(
           identifier, WAYPOINT_SHORT) == 0) {
-    if (value == nullptr) {
+    if (value == nullptr || strcmp(value, "") == 0) {
       fprintf(
           stderr,
           "a valid waypoint name has to be passed, if waypoints should be used.");
@@ -110,6 +108,10 @@ const char* check_waypoint(const char* identifier, const char* value) {
 }
 
 int main(const int argc, char* argv[]) {
+#if __STDC_VERSION__ < 201112L
+  fprintf(stderr, "C11 support required\n");
+  return EXIT_FAILURE;
+#endif
   // Declare variables
   const DICTIONARY* dictionary = nullptr;
   const char* start = nullptr;
@@ -124,7 +126,7 @@ int main(const int argc, char* argv[]) {
   bool reallife = false;
 
   for (int i = 1; i < argc; ++i) {
-    // Check for map
+    // Check for the map
     if (!map_given) {
       dictionary = check_map(argv[i], argv[i + 1]);
       if (dictionary != nullptr) {
@@ -203,7 +205,16 @@ int main(const int argc, char* argv[]) {
     return EXIT_FAILURE;
   }
 
-  // average data
+  /*
+   * average data for fuel efficiency and price per liter
+   *
+   * fuel efficiency sources:
+   * source: https://de.statista.com/statistik/daten/studie/484054/umfrage/durchschnittsverbrauch-pkw-in-privaten-haushalten-in-deutschland/
+   * source: https://hvv-schulprojekte.de/unterrichtsmaterialien/kraftstoffverbrauch/#:~:text=Spezifischer%20Kraftstoffverbrauch%20der%20Pkw%20in%20Deutschland&text=Die%20Angaben%20für%20jeden%20Autotyp,100%20km%20für%20Benzin%2DPkw.
+   *
+   * price per liter source:
+   * https://de.statista.com/statistik/daten/studie/1690/umfrage/preis-fuer-einen-liter-superbenzin-monatsdurchschnittswerte/
+  */
   double fuel_efficiency = 7.7;
   double price_per_liter = 1.85;
   if (reallife) {
@@ -217,7 +228,9 @@ int main(const int argc, char* argv[]) {
   if (waypoints != nullptr) {
     distance = dijkstra(dictionary, start, waypoints[0], debug);
     if (!reallife) {
-      printf("Estimated price and fuel consumption based on average data:\n");
+      printf(
+          "Estimated price and fuel consumption based on average data (7.7l/km - 1.85€/l):\n"
+          );
     }
     double liter =
         calculate_fuel_consumption(distance, fuel_efficiency);
