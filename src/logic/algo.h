@@ -5,6 +5,8 @@
 #ifndef ALGO_H
 #define ALGO_H
 
+#include <stdbool.h>
+
 #include "../objects/dictionary.h"
 
 /**
