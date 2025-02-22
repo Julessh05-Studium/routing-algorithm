@@ -190,6 +190,7 @@ void calculate_distances(
     const double liter =
         calculate_fuel_consumption(distance, fuel_efficiency);
     calculate_liter_price(liter, price_per_liter);
+    printf("\n");
   }
 }
 
@@ -207,7 +208,7 @@ int main(const int argc, char* argv[]) {
   bool start_given = false;
   bool target_given = false;
   bool debug = false;
-  char** waypoints = malloc(sizeof(char*) * 2);;
+  char** waypoints = malloc(sizeof(char*) * 2);
   int waypoints_size = 2;
   bool reallife = false;
 
