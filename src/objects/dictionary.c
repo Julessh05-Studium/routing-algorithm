@@ -9,6 +9,20 @@
 
 /* VALUE FUNCTIONS */
 
+bool connection_in_values(const VALUE *val, const CONNECTION *connection) {
+  if (val == nullptr || connection == nullptr) {
+    return true;
+  }
+
+  for (int i = 0; i < val->size; ++i) {
+    const CONNECTION *tmp = &val->connections[i];
+    if (strcmp(tmp->destination.name, connection->destination.name) == 0) {
+      return true;
+    }
+  }
+
+  return false;
+}
 
 CONNECTION get_nearest(const VALUE value, const DICTIONARY* dict) {
   int smallest_distance = -1;

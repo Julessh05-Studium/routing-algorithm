@@ -51,6 +51,18 @@ typedef struct {
 // VALUE FUNCTIONS
 
 /**
+ * Checks if given connection is already in given value.
+ * This methode returns true, if given parameters where NULL, because
+ * calling methods will allocate memory if return value is false.
+ *
+ * @param val value containing connections.
+ * @param connection connection to check.
+ * @return true if given parameters where nullptr or connection is
+ * already in value, false otherwise.
+ */
+bool connection_in_values(const VALUE *val, const CONNECTION *connection);
+
+/**
  * Returns the connection with the smallest distance in the array of the passed value.
  * Passing a specific value implicitly means searching for the nearest connection to the city which has been the key to the passed value.
  */

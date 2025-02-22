@@ -15,10 +15,10 @@
 
 int csv_column;
 int char_column_index;
-CITY* start_city;
-CITY* dest_city;
-FILE* map_file;
-DICTIONARY* dictionary;
+CITY *start_city;
+CITY *dest_city;
+FILE *map_file;
+DICTIONARY *dictionary;
 
 /**
  * Initializes the global variables for parsing a new csv row.
@@ -29,7 +29,7 @@ void init_csv_line() {
 }
 
 /**
- * Resets column counter and character counter for reading next line.
+ * Resets column counter and character counter for reading the next line.
  */
 void next_column() {
   csv_column++;
@@ -45,36 +45,41 @@ void next_column() {
  * @param dest_city destination city
  * @param dist distance between start and destination city
  */
-bool add_wp_to_dict(DICTIONARY* dictionary, const CITY* start_city,
-                    const CITY* dest_city, const int dist) {
-  if (start_city == NULL || dest_city == NULL) {
+bool add_connection_to_dict(DICTIONARY *dictionary, const CITY *start_city,
+                    const CITY *dest_city, const int dist) {
+  if (start_city == nullptr || dest_city == nullptr) {
     return false;
   }
 
-  VALUE* val = get_value(dictionary, start_city->name);
-  if (val == NULL) {
+  VALUE *val = get_value(dictionary, start_city->name);
+  if (val == nullptr) {
     val = malloc(sizeof(VALUE));
-    if (val == NULL) {
+    if (val == nullptr) {
       return false;
     }
 
     val->connections = malloc(sizeof(CONNECTION));
-    if (val->connections == NULL) {
+    if (val->connections == nullptr) {
       return false;
     }
     add_to_dictionary(dictionary, start_city, val);
   }
 
-  add(val,
-      (CONNECTION){
-          .city = *start_city, .destination = *dest_city, .distance = dist});
+  const CONNECTION connection = (CONNECTION){
+    .city = *start_city, .destination = *dest_city, .distance = dist};
+
+  if (connection_in_values(val, &connection)) {
+    return true;
+  }
+
+  add(val, connection);
   return true;
 }
 
 /**
  * Frees given parameters and closes file stream.
  */
-void free_mem(FILE* file, char* val) {
+void free_mem(FILE *file, char *val) {
   free(val);
   fclose(file);
 }
@@ -86,12 +91,12 @@ void free_mem(FILE* file, char* val) {
  */
 bool malloc_start_dest_city() {
   start_city = malloc(sizeof(CITY));
-  if (start_city == NULL) {
+  if (start_city == nullptr) {
     return false;
   }
 
   dest_city = malloc(sizeof(CITY));
-  if (dest_city == NULL) {
+  if (dest_city == nullptr) {
     free(start_city);
     return false;
   }
@@ -106,9 +111,9 @@ bool malloc_start_dest_city() {
  * @param city city to set the name
  * @return a bool if the name was set successfully
  */
-bool set_city_name(const char* name, CITY* city) {
+bool set_city_name(const char *name, CITY *city) {
   city->name = malloc(strlen(name) + 1);
-  if (city->name == NULL) {
+  if (city->name == nullptr) {
     print_error_general("Name of city is NULL");
     return false;
   }
@@ -118,15 +123,15 @@ bool set_city_name(const char* name, CITY* city) {
 }
 
 /**
- * Converts given string to integer
+ * Converts given string to an integer
  * @param val string to convert
  * @return the converted integer
  */
-int get_distance_from_str(const char* val) {
+int get_distance_from_str(const char *val) {
   char tmp[char_column_index + 1];
   strncpy(tmp, val + '\0', char_column_index);
   tmp[char_column_index] = '\0';
-  return strtoumax(tmp, nullptr, 10);
+  return (int) strtoumax(tmp, nullptr, 10);
 }
 
 /**
@@ -135,7 +140,7 @@ int get_distance_from_str(const char* val) {
  * @param current_word
  * @return
  */
-bool handle_csv_column(const char* current_word) {
+bool handle_csv_column(const char *current_word) {
   switch (csv_column) {
     case 0: {
       set_city_name(current_word, start_city);
@@ -157,7 +162,7 @@ bool handle_csv_column(const char* current_word) {
 /**
  * Initializes the file reader and dictionary.
  *
- * @param path path to file map file.
+ * @param path path to file the map file.
  * @return a bool if opening file and allocating memory for dictionary succeeded.
  */
 bool init_parser(const char path[]) {
@@ -178,20 +183,19 @@ bool init_parser(const char path[]) {
 }
 
 /**
- * Resizes the buffer size of specified string.
+ * Resizes the buffer size of the specified string.
  *
  * @param buf_size size of the current buffer.
  * @param current_word string to resize.
  * @return true if reallocation succeeded, false otherwise.
  */
-bool resize_buffer(int* buf_size, char** current_word) {
-  if (current_word == nullptr || *current_word == nullptr || buf_size ==
-      nullptr) {
+bool resize_buffer(int *buf_size, char **current_word) {
+  if (current_word == nullptr || *current_word == nullptr || buf_size == nullptr) {
     return false;
   }
 
   *buf_size += BUFFER_SIZE;
-  char* tmp = realloc(*current_word, *buf_size);
+  char *tmp = realloc(*current_word, *buf_size);
   if (tmp == NULL) {
     return false;
   }
@@ -200,8 +204,19 @@ bool resize_buffer(int* buf_size, char** current_word) {
 }
 
 /**
+ * A character is printable if the ASCII value is greater than 32
+ * (character 33: first printable is "!").
+ *
+ * @param c character to specify
+ * @return
+ */
+bool is_printable_char(const int c) {
+  return c > 32;
+}
+
+/**
  * Parses the map file given by the specified file path.
- * After allocating needed memory and opening file stream,
+ * After allocating the necessary memory and opening file stream,
  * the file is parsed character by character until EOF is reached.
  *
  * @param path absolute path to the file
@@ -212,7 +227,7 @@ DICTIONARY* parse(const char path[]) {
     return nullptr;
   }
 
-  char* current_word = malloc(32 * sizeof(char));
+  char *current_word = malloc(32 * sizeof(char));
   if (current_word == NULL || !malloc_start_dest_city()) {
     fclose(map_file);
     free(dictionary);
@@ -220,6 +235,7 @@ DICTIONARY* parse(const char path[]) {
   }
 
   int buf_size = BUFFER_SIZE;
+  bool first_column_printable_char = false;
   init_csv_line();
 
   while (true) {
@@ -234,16 +250,16 @@ DICTIONARY* parse(const char path[]) {
 
     if (current_char == '\n' || current_char == EOF) {
       line_number++;
+      first_column_printable_char = false;
       const int dist_str = get_distance_from_str(current_word);
       if (dist_str == 0) {
         print_error_general("Distance has to be 1 or greater");
         return nullptr;
       }
 
-      add_wp_to_dict(dictionary, start_city, dest_city, dist_str);
+      add_connection_to_dict(dictionary, start_city, dest_city, dist_str);
 
-      if (start_city == NULL || dest_city == NULL || !
-          malloc_start_dest_city()) {
+      if (start_city == NULL || dest_city == NULL || !malloc_start_dest_city()) {
         free_mem(map_file, current_word);
         return nullptr;
       }
@@ -257,6 +273,7 @@ DICTIONARY* parse(const char path[]) {
     }
 
     if (current_char == ',') {
+      first_column_printable_char = false;
       if (char_column_index == 0) {
         print_error_syntax("City name is NULL");
         return nullptr;
@@ -273,7 +290,10 @@ DICTIONARY* parse(const char path[]) {
       continue;
     }
 
-    current_word[char_column_index++] = (char)current_char;
+    if (is_printable_char(current_char) || first_column_printable_char) {
+      current_word[char_column_index++] = (char) current_char;
+      first_column_printable_char = true;
+    }
     increment_char_index();
   }
 
