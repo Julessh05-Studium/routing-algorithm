@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <_stdlib.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -91,6 +91,11 @@ char* check_target(const char* identifier, const char* value) {
 }
 
 int main(int argc, char* argv[]) {
+#if __STDC_VERSION__ < 202000
+  fprintf(stderr, "C23 support required\n");
+  return EXIT_FAILURE;
+#endif
+
   // Declare variables
   DICTIONARY* dictionary;
   char* start;
