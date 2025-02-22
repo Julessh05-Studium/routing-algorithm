@@ -156,7 +156,7 @@ int dijkstra(
 
   // Print route to target
   const ROUTE* target_route = get_route_for_city(routes, DICT_SIZE, target);
-  printf("Target %s reached:\n", target);
+  printf("Destination %s reached:\n", target);
   print_route(target_route, start);
   const int distance = target_route->distance;
 

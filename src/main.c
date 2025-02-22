@@ -93,6 +93,12 @@ const char* check_target(const char* identifier, const char* value) {
   return nullptr;
 }
 
+/**
+ * Checks for the waypoint marker and returns the waypoint if found
+ * @param identifier the identifier to check for the waypoint marker
+ * @param value the waypoint passed, if it is a waypoint
+ * @return the waypoint if found
+ */
 const char* check_waypoint(const char* identifier, const char* value) {
   if (strcmp(identifier, WAYPOINT_LONG) == 0 || strcmp(
           identifier, WAYPOINT_SHORT) == 0) {
@@ -108,23 +114,50 @@ const char* check_waypoint(const char* identifier, const char* value) {
 }
 
 /**
+ * Creates the waypoint array at the location specified by waypoints based on all waypoints as arguments
+ * @param identifier the identifier to check for the waypoint marker
+ * @param value the value of the waypoint
+ * @param waypoints the array containing all the waypoints
+ * @param waypoints_size the size of the waypoints array
+ */
+const char** create_waypoint_arr(
+    const char* identifier,
+    const char* value,
+    char** waypoints,
+    int* waypoints_size
+    ) {
+  const char* waypoint_to_check = check_waypoint(identifier, value);
+  if (waypoint_to_check != nullptr) {
+    *waypoints_size = *waypoints_size + 1;
+    char** tmp_waypoints_pointer = realloc(waypoints,
+                                           sizeof(char*) * *waypoints_size);
+    if (tmp_waypoints_pointer == nullptr) {
+      *waypoints_size = *waypoints_size - 1;
+      return waypoints;
+    }
+    waypoints = tmp_waypoints_pointer;
+    // - 2 because -1 would be the last element, and -2 is the second last element, which works, because the last element is reserved for destination
+    waypoints[*waypoints_size - 2] = waypoint_to_check;
+    return waypoints;
+  }
+  return waypoints;
+}
+
+/**
  * Calculates the distances and prints the routes to the std out.
  *
  * @param waypoints the waypoints to visit on the way
  * @param waypoints_size the size of the waypoints array
  * @param dictionary the dictionary of cities
- * @param start the start city
- * @param target the target city
  * @param reallife whether to apply reallife application or not
  * @param debug whether to enable debug mode or not
  */
-void calculate_distances(const char** waypoints,
-                         const int waypoints_size,
-                         const DICTIONARY* dictionary,
-                         const char* start,
-                         const char* target,
-                         const bool reallife,
-                         const bool debug
+void calculate_distances(
+    const char** waypoints,
+    const int waypoints_size,
+    const DICTIONARY* dictionary,
+    const bool reallife,
+    const bool debug
     ) {
   /*
    * average data for fuel efficiency and price per liter
@@ -146,25 +179,13 @@ void calculate_distances(const char** waypoints,
 
   // calculate different routes
   int distance = 0;
-  if (waypoints != nullptr) {
-    distance = dijkstra(dictionary, start, waypoints[0], debug);
+
+  for (int i = 0; i < waypoints_size - 1; i++) {
+    distance = dijkstra(dictionary, waypoints[i], waypoints[i + 1], debug);
     if (!reallife) {
       printf(
           "Estimated price and fuel consumption based on average data (7.7l/km - 1.85€/l):\n"
           );
-    }
-    double liter =
-        calculate_fuel_consumption(distance, fuel_efficiency);
-    calculate_liter_price(liter, price_per_liter);
-    for (int i = 0; i < waypoints_size; ++i) {
-      distance = dijkstra(dictionary, waypoints[i], waypoints[i + 1], debug);
-      liter = calculate_fuel_consumption(distance, fuel_efficiency);
-      calculate_liter_price(liter, price_per_liter);
-    }
-  } else {
-    distance = dijkstra(dictionary, start, target, debug);
-    if (!reallife) {
-      printf("Estimated price and fuel consumption based on average data:\n");
     }
     const double liter =
         calculate_fuel_consumption(distance, fuel_efficiency);
@@ -174,8 +195,8 @@ void calculate_distances(const char** waypoints,
 
 
 int main(const int argc, char* argv[]) {
-#if __STDC_VERSION__ < 201112L
-  fprintf(stderr, "C11 support required\n");
+#if __STDC_VERSION__ < 20200
+  fprintf(stderr, "C23 support required\n");
   return EXIT_FAILURE;
 #endif
   // Declare variables
@@ -186,9 +207,8 @@ int main(const int argc, char* argv[]) {
   bool start_given = false;
   bool target_given = false;
   bool debug = false;
-  char** waypoints = nullptr;
-  int waypoints_size = 0;
-  unsigned long* waypoints_length = nullptr;
+  char** waypoints = malloc(sizeof(char*) * 2);;
+  int waypoints_size = 2;
   bool reallife = false;
 
   for (int i = 1; i < argc; ++i) {
@@ -198,6 +218,7 @@ int main(const int argc, char* argv[]) {
       if (dictionary != nullptr) {
         map_given = true;
         i++;
+        continue;
       }
     }
 
@@ -207,6 +228,9 @@ int main(const int argc, char* argv[]) {
       if (start != nullptr) {
         start_given = true;
         i++;
+        // Add start to waypoints array
+        waypoints[0] = start;
+        continue;
       }
     }
 
@@ -216,6 +240,7 @@ int main(const int argc, char* argv[]) {
       if (target != nullptr) {
         target_given = true;
         i++;
+        continue;
       }
     }
 
@@ -223,59 +248,37 @@ int main(const int argc, char* argv[]) {
     if (strcmp(argv[i], DEBUG_LONG) == 0 || strcmp(argv[i], DEBUG_SHORT) ==
         0) {
       debug = true;
+      continue;
     }
 
     // Check for reallife application with fuel and price
     if (strcmp(argv[i], REALLIFE_ACTIVE) == 0) {
       reallife = true;
+      continue;
     }
 
-    // TODO-js: extract method
-    const char* waypoint_to_check = check_waypoint(argv[i], argv[i + 1]);
-    if (waypoint_to_check != nullptr) {
-      waypoints_size++;
-      char** tmp_waypoints_pointer;
-      if (waypoints != nullptr) {
-        tmp_waypoints_pointer = realloc(waypoints,
-                                        sizeof(char*) * waypoints_size);
-      } else {
-        tmp_waypoints_pointer = malloc(sizeof(char*));
-      }
-      waypoints = tmp_waypoints_pointer;
-      //free(tmp_waypoints_pointer);
-
-      unsigned long* tmp_waypoints_length_pointer;
-      if (waypoints_length != nullptr) {
-        tmp_waypoints_length_pointer = realloc(waypoints_length,
-                                               sizeof(unsigned long) *
-                                               waypoints_size);
-      } else {
-        tmp_waypoints_length_pointer = malloc(sizeof(unsigned long));
-      }
-      waypoints_length = tmp_waypoints_length_pointer;
-      //free(tmp_waypoints_length_pointer);
-
-      waypoints[waypoints_size - 1] =
-          malloc(sizeof(char) * strlen(argv[i + 1]));
-      waypoints[waypoints_size - 1] = argv[i + 1];
-      waypoints_length[waypoints_size - 1] = strlen(argv[i + 1]);
-    }
+    // Create the waypoint array
+    waypoints = create_waypoint_arr(argv[i], argv[i + 1], waypoints,
+                                    &waypoints_size);
   }
+  waypoints[waypoints_size - 1] = target;
 
   // Error handling if one or more required information are not provided
   if (!(map_given && start_given && target_given)) {
     fprintf(
         stderr,
-        "To run the program, a valid map, start and target have to be passed"
+        "To run the program, a valid map, start and target have to be passed\n"
         );
+    for (int i = 0; i < waypoints_size; ++i) {
+      free(waypoints[i]);
+    }
+    free(waypoints);
     return EXIT_FAILURE;
   }
 
   // calculate distances
-  calculate_distances(waypoints, waypoints_size, dictionary, start, target,
-                      reallife, debug);
+  calculate_distances(waypoints, waypoints_size, dictionary, reallife, debug);
   // Free memory
   free(waypoints);
-  free(waypoints_length);
   return EXIT_SUCCESS;
 }

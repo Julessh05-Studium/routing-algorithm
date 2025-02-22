@@ -30,7 +30,7 @@ void print_route(const ROUTE* route, const char* start) {
       printf("\n");
     }
   }
-  printf("Total distance: %dkm\n", route->distance);
+  printf("Total distance: %dkm\n\n", route->distance);
 }
 
 CONNECTION* get_last_eof(const ROUTE* route) {
