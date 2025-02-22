@@ -64,9 +64,14 @@ bool add_connection_to_dict(DICTIONARY *dictionary, const CITY *start_city,
     add_to_dictionary(dictionary, start_city, val);
   }
 
-  add(val,
-      (CONNECTION){
-          .city = *start_city, .destination = *dest_city, .distance = dist});
+  const CONNECTION connection = (CONNECTION){
+    .city = *start_city, .destination = *dest_city, .distance = dist};
+
+  if (connection_in_values(val, &connection)) {
+    return true;
+  }
+
+  add(val, connection);
   return true;
 }
 
