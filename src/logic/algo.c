@@ -94,18 +94,16 @@ int dijkstra(
   const int DICT_SIZE = dict->size;
   // Copy cities to working array
   CITY* all_cities = malloc(sizeof(CITY) * DICT_SIZE);
-  // TODO-js: delete?
-  int all_cities_size = 0;
-  for (; all_cities_size < DICT_SIZE; all_cities_size++) {
-    all_cities[all_cities_size] = dict->keys[all_cities_size];
+  for (int i = 0; i < DICT_SIZE; i++) {
+    all_cities[i] = dict->keys[i];
   }
 
   // Create routes array for all routes
-  ROUTE* routes = malloc(sizeof(ROUTE) * all_cities_size);
+  ROUTE* routes = malloc(sizeof(ROUTE) * DICT_SIZE);
 
   // Create a single route for every city
   // TODO-js: extract function
-  for (int i = 0; i < all_cities_size; i++) {
+  for (int i = 0; i < DICT_SIZE; i++) {
     ROUTE* route = malloc(sizeof(ROUTE));
     route->destination = all_cities[i];
     route->connections = malloc(sizeof(CONNECTION));
@@ -120,11 +118,11 @@ int dijkstra(
   }
 
   // For every city that is not yet calculated fully
-  while (!all_cities_visited(all_cities, all_cities_size)) {
+  while (!all_cities_visited(all_cities, DICT_SIZE)) {
     // Get connection with the smallest distance to
     const ROUTE* shortest_route = get_route_min_dist(
         routes, DICT_SIZE, all_cities,
-        all_cities_size);
+        DICT_SIZE);
     const CITY sr_destination = shortest_route->destination;
     const VALUE* value = get_value(dict, sr_destination.name);
     const CONNECTION* neighbors = value->connections;
@@ -149,7 +147,7 @@ int dijkstra(
     }
 
     // Restructure array and mark current city as visited
-    for (int j = 0; j < all_cities_size; j++) {
+    for (int j = 0; j < DICT_SIZE; j++) {
       if (strcmp(all_cities[j].name, sr_destination.name) == 0) {
         all_cities[j].visited = true;
       }
@@ -158,7 +156,7 @@ int dijkstra(
 
   // Print route to target
   const ROUTE* target_route = get_route_for_city(routes, DICT_SIZE, target);
-  printf("Target %s reached:\n", target);
+  printf("Destination %s reached:\n", target);
   print_route(target_route, start);
   const int distance = target_route->distance;
 

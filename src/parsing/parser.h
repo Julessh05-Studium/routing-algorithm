@@ -7,6 +7,6 @@
 
 #include "../objects/dictionary.h"
 
-DICTIONARY *parse(char path[]);
+DICTIONARY* parse(const char path[]);
 
 #endif //PARSER_H

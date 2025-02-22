@@ -5,6 +5,8 @@
 #ifndef ALGO_H
 #define ALGO_H
 
+#include <stdbool.h>
+
 #include "../objects/dictionary.h"
 
 /**
@@ -14,13 +16,10 @@
  * target is the algorithm's destination
  */
 int dijkstra(
-    const DICTIONARY *dict,
-    const char *start,
-    const char *target,
+    const DICTIONARY* dict,
+    const char* start,
+    const char* target,
     bool debug
-);
-
-/* OPTIONAL */
-// void a_star();
+    );
 
 #endif //ALGO_H

@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 #define BUFFER_SIZE 32
 
@@ -164,7 +165,7 @@ bool handle_csv_column(const char *current_word) {
  * @param path path to file the map file.
  * @return a bool if opening file and allocating memory for dictionary succeeded.
  */
-bool init_parser(char path[]) {
+bool init_parser(const char path[]) {
   map_file = fopen(path, "r");
   if (map_file == NULL) {
     fclose(map_file);
@@ -221,7 +222,7 @@ bool is_printable_char(const int c) {
  * @param path absolute path to the file
  * @return a dictionary with data from the map.
  */
-DICTIONARY *parse(char path[]) {
+DICTIONARY* parse(const char path[]) {
   if (!init_parser(path)) {
     return nullptr;
   }

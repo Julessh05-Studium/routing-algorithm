@@ -8,10 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-/**
- * Queries the user for the fuel efficiency of their car
- * @return the fuel efficiency as l/km
- */
+
 double query_fuel_efficiency() {
   printf(
       "Enter the fuel efficiency of your car to get the fuel consumption for this route, or press n to exit: ");
@@ -27,17 +24,14 @@ double query_fuel_efficiency() {
 }
 
 
-double calculate_fuel_consumption(const int distance) {
-  const double fuel_efficiency = query_fuel_efficiency();
+double calculate_fuel_consumption(const int distance,
+                                  const double fuel_efficiency) {
   const double fuel_consumption = fuel_efficiency * distance / 100;
   printf("You need %.2fl of fuel for this trip\n", fuel_consumption);
   return fuel_consumption;
 }
 
-/**
- * Queries the user for the price per liter in euro
- * @return the price per liter in euro
- */
+
 double query_liter_price() {
   printf("Enter the price per liter, or press n to exit: ");
   char* liter_price = malloc(sizeof(char) * 10);
@@ -52,8 +46,7 @@ double query_liter_price() {
 }
 
 
-double calculate_liter_price(const double liter) {
-  const double price_per_liter = query_liter_price();
+double calculate_liter_price(const double liter, const double price_per_liter) {
   const double complete_price = price_per_liter * liter;
   printf("The fuel for this trip will cost %.2f€\n", complete_price);
   return complete_price;
