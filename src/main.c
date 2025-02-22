@@ -16,8 +16,8 @@
 #define START_LONG "--start"
 #define START_SHORT "-s"
 
-#define TARGET_LONG "--target"
-#define TARGET_SHORT "-t"
+#define TARGET_LONG "--destination"
+#define TARGET_SHORT "-dest"
 
 #define DEBUG_LONG "--debug"
 #define DEBUG_SHORT "-d"
@@ -106,6 +106,72 @@ const char* check_waypoint(const char* identifier, const char* value) {
   }
   return nullptr;
 }
+
+/**
+ * Calculates the distances and prints the routes to the std out.
+ *
+ * @param waypoints the waypoints to visit on the way
+ * @param waypoints_size the size of the waypoints array
+ * @param dictionary the dictionary of cities
+ * @param start the start city
+ * @param target the target city
+ * @param reallife whether to apply reallife application or not
+ * @param debug whether to enable debug mode or not
+ */
+void calculate_distances(const char** waypoints,
+                         const int waypoints_size,
+                         const DICTIONARY* dictionary,
+                         const char* start,
+                         const char* target,
+                         const bool reallife,
+                         const bool debug
+    ) {
+  /*
+   * average data for fuel efficiency and price per liter
+   *
+   * fuel efficiency sources:
+   * source: https://de.statista.com/statistik/daten/studie/484054/umfrage/durchschnittsverbrauch-pkw-in-privaten-haushalten-in-deutschland/
+   * source: https://hvv-schulprojekte.de/unterrichtsmaterialien/kraftstoffverbrauch/#:~:text=Spezifischer%20Kraftstoffverbrauch%20der%20Pkw%20in%20Deutschland&text=Die%20Angaben%20für%20jeden%20Autotyp,100%20km%20für%20Benzin%2DPkw.
+   *
+   * price per liter source:
+   * https://de.statista.com/statistik/daten/studie/1690/umfrage/preis-fuer-einen-liter-superbenzin-monatsdurchschnittswerte/
+  */
+  double fuel_efficiency = 7.7;
+  double price_per_liter = 1.85;
+  if (reallife) {
+    // Query specific user data
+    fuel_efficiency = query_fuel_efficiency();
+    price_per_liter = query_liter_price();
+  }
+
+  // calculate different routes
+  int distance = 0;
+  if (waypoints != nullptr) {
+    distance = dijkstra(dictionary, start, waypoints[0], debug);
+    if (!reallife) {
+      printf(
+          "Estimated price and fuel consumption based on average data (7.7l/km - 1.85€/l):\n"
+          );
+    }
+    double liter =
+        calculate_fuel_consumption(distance, fuel_efficiency);
+    calculate_liter_price(liter, price_per_liter);
+    for (int i = 0; i < waypoints_size; ++i) {
+      distance = dijkstra(dictionary, waypoints[i], waypoints[i + 1], debug);
+      liter = calculate_fuel_consumption(distance, fuel_efficiency);
+      calculate_liter_price(liter, price_per_liter);
+    }
+  } else {
+    distance = dijkstra(dictionary, start, target, debug);
+    if (!reallife) {
+      printf("Estimated price and fuel consumption based on average data:\n");
+    }
+    const double liter =
+        calculate_fuel_consumption(distance, fuel_efficiency);
+    calculate_liter_price(liter, price_per_liter);
+  }
+}
+
 
 int main(const int argc, char* argv[]) {
 #if __STDC_VERSION__ < 201112L
@@ -205,51 +271,9 @@ int main(const int argc, char* argv[]) {
     return EXIT_FAILURE;
   }
 
-  /*
-   * average data for fuel efficiency and price per liter
-   *
-   * fuel efficiency sources:
-   * source: https://de.statista.com/statistik/daten/studie/484054/umfrage/durchschnittsverbrauch-pkw-in-privaten-haushalten-in-deutschland/
-   * source: https://hvv-schulprojekte.de/unterrichtsmaterialien/kraftstoffverbrauch/#:~:text=Spezifischer%20Kraftstoffverbrauch%20der%20Pkw%20in%20Deutschland&text=Die%20Angaben%20für%20jeden%20Autotyp,100%20km%20für%20Benzin%2DPkw.
-   *
-   * price per liter source:
-   * https://de.statista.com/statistik/daten/studie/1690/umfrage/preis-fuer-einen-liter-superbenzin-monatsdurchschnittswerte/
-  */
-  double fuel_efficiency = 7.7;
-  double price_per_liter = 1.85;
-  if (reallife) {
-    // Query specific user data
-    fuel_efficiency = query_fuel_efficiency();
-    price_per_liter = query_liter_price();
-  }
-
-  // calculate different routes
-  int distance = 0;
-  if (waypoints != nullptr) {
-    distance = dijkstra(dictionary, start, waypoints[0], debug);
-    if (!reallife) {
-      printf(
-          "Estimated price and fuel consumption based on average data (7.7l/km - 1.85€/l):\n"
-          );
-    }
-    double liter =
-        calculate_fuel_consumption(distance, fuel_efficiency);
-    calculate_liter_price(liter, price_per_liter);
-    for (int i = 0; i < waypoints_size; ++i) {
-      distance = dijkstra(dictionary, waypoints[i], waypoints[i + 1], debug);
-      liter = calculate_fuel_consumption(distance, fuel_efficiency);
-      calculate_liter_price(liter, price_per_liter);
-    }
-  } else {
-    distance = dijkstra(dictionary, start, target, debug);
-    if (!reallife) {
-      printf("Estimated price and fuel consumption based on average data:\n");
-    }
-    const double liter =
-        calculate_fuel_consumption(distance, fuel_efficiency);
-    calculate_liter_price(liter, price_per_liter);
-  }
-
+  // calculate distances
+  calculate_distances(waypoints, waypoints_size, dictionary, start, target,
+                      reallife, debug);
   // Free memory
   free(waypoints);
   free(waypoints_length);
