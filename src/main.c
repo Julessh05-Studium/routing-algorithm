@@ -253,13 +253,6 @@ int main(const int argc, char* argv[]) {
         i++;
         // Add start to waypoints array
         waypoints[0] = start;
-
-        // Append start to complete route
-        const char* tmp_start = malloc(sizeof(char) * (strlen(start) + 4));
-        strcpy(tmp_start, start);
-        strcat(tmp_start, " -> ");
-        complete_route = malloc(strlen(tmp_start));
-        strcat(complete_route, tmp_start);
         continue;
       }
     }
@@ -291,8 +284,6 @@ int main(const int argc, char* argv[]) {
     waypoints = create_waypoint_arr(argv[i], argv[i + 1], waypoints,
                                     &waypoints_size);
   }
-  waypoints[waypoints_size - 1] = target;
-
   // Error handling if one or more required information are not provided
   if (!(map_given && start_given && target_given)) {
     fprintf(
@@ -306,13 +297,25 @@ int main(const int argc, char* argv[]) {
     return EXIT_FAILURE;
   }
 
+  waypoints[waypoints_size - 1] = target;
+  if (!debug) {
+    // Append start to complete route
+    const char* tmp_start = malloc(sizeof(char) * (strlen(start) + 4));
+    strcpy(tmp_start, start);
+    strcat(tmp_start, " -> ");
+    complete_route = malloc(strlen(tmp_start));
+    strcat(complete_route, tmp_start);
+  }
+
   // calculate distances
   calculate_distances(waypoints, waypoints_size, dictionary, reallife, debug,
                       &complete_route, &complete_distance);
-  printf("%s\n", complete_route);
-  const double liter =
-      calculate_fuel_consumption(complete_distance, fuel_efficiency);
-  calculate_liter_price(liter, price_per_liter);
+  if (strlen(complete_route) > 0 && waypoints_size > 2) {
+    printf("%s\n", complete_route);
+    const double liter =
+        calculate_fuel_consumption(complete_distance, fuel_efficiency);
+    calculate_liter_price(liter, price_per_liter);
+  }
   // Free memory
   free(waypoints);
   return EXIT_SUCCESS;

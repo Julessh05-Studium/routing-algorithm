@@ -22,22 +22,26 @@ void append_to_route(ROUTE* route, const CONNECTION connection) {
 }
 
 void print_route(const ROUTE* route, const char* start,
-                 char** complete_route) {
+                 char** complete_route, const bool debug) {
   printf("%s -> ", start);
   for (int i = 0; i < route->length; i++) {
     const char* connection = route->connections[i].destination.name;
     printf("%s", connection);
-    char* tmp_complete_route = realloc(*complete_route,
-                                       sizeof(char) * (
-                                         strlen(*complete_route) + strlen(
-                                             connection) + 4
-                                       )
-        );
-    *complete_route = tmp_complete_route;
-    strcat(*complete_route, connection);
+    if (!debug) {
+      char* tmp_complete_route = realloc(*complete_route,
+                                         sizeof(char) * (
+                                           strlen(*complete_route) + strlen(
+                                               connection) + 4
+                                         )
+          );
+      *complete_route = tmp_complete_route;
+      strcat(*complete_route, connection);
+    }
     if (i != route->length - 1) {
       printf(" -> ");
-      strcat(*complete_route, " -> ");
+      if (!debug) {
+        strcat(*complete_route, " -> ");
+      }
     } else {
       printf("\n");
     }

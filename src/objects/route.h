@@ -33,9 +33,10 @@ void append_to_route(ROUTE* route, CONNECTION connection);
  * @param route the route to print out to the console
  * @param start the start point of the route
  * @param complete_route the string with all the waypoints over the whole trip
+ * @param debug whether debug mode is active
  */
 void print_route(const ROUTE* route, const char* start,
-                 char** complete_route);
+                 char** complete_route, const bool debug);
 
 /**
  * Returns the last parameter of the route
