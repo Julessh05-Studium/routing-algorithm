@@ -84,26 +84,16 @@ ROUTE* get_route_for_city(ROUTE* routes, const int size, const char* name) {
   return nullptr;
 }
 
-int dijkstra(
-    const DICTIONARY* dict,
-    const char* start,
-    const char* target,
-    const bool debug
-    ) {
-  // constant var for dictionary size
-  const int DICT_SIZE = dict->size;
-  // Copy cities to working array
-  CITY* all_cities = malloc(sizeof(CITY) * DICT_SIZE);
-  for (int i = 0; i < DICT_SIZE; i++) {
-    all_cities[i] = dict->keys[i];
-  }
-
-  // Create routes array for all routes
-  ROUTE* routes = malloc(sizeof(ROUTE) * DICT_SIZE);
-
-  // Create a single route for every city
-  // TODO-js: extract function
-  for (int i = 0; i < DICT_SIZE; i++) {
+/**
+ * Creates a route for every city in the all_cities array
+ * @param routes the routes array which the routes should be stored in
+ * @param all_cities the cities array containing the cities a route should be created for
+ * @param size the size of the dictionary, which has to be the size of the routes array and the all_cities array
+ * @param start the start city name
+ */
+void create_routes(ROUTE* routes, const CITY* all_cities, const int size,
+                   const char* start) {
+  for (int i = 0; i < size; i++) {
     ROUTE* route = malloc(sizeof(ROUTE));
     route->destination = all_cities[i];
     route->connections = malloc(sizeof(CONNECTION));
@@ -116,6 +106,27 @@ int dijkstra(
     // Add route to routes
     routes[i] = *route;
   }
+}
+
+int dijkstra(
+    const DICTIONARY* dict,
+    const char* start,
+    const char* target,
+    const bool debug
+    ) {
+  // constant var for dictionary size
+  const int DICT_SIZE = dict->size;
+  // Copy cities to the working array
+  CITY* all_cities = malloc(sizeof(CITY) * DICT_SIZE);
+  for (int i = 0; i < DICT_SIZE; i++) {
+    all_cities[i] = dict->keys[i];
+  }
+
+  // Create routes array for all routes
+  ROUTE* routes = malloc(sizeof(ROUTE) * DICT_SIZE);
+
+  // Create a single route for every city
+  create_routes(routes, all_cities, DICT_SIZE, start);
 
   // For every city that is not yet calculated fully
   while (!all_cities_visited(all_cities, DICT_SIZE)) {
