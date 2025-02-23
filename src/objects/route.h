@@ -6,6 +6,7 @@
 #define ROUTE_H
 
 #include "dictionary.h"
+#include <stdbool.h>
 
 /* STRUCT */
 
@@ -36,7 +37,7 @@ void append_to_route(ROUTE* route, CONNECTION connection);
  * @param debug whether debug mode is active
  */
 void print_route(const ROUTE* route, const char* start,
-                 char** complete_route, const bool debug);
+                 char** complete_route, bool debug);
 
 /**
  * Returns the last parameter of the route
