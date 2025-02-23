@@ -202,16 +202,18 @@ void calculate_distances(
       *complete_route = tmp_complete_route;
       strcat(*complete_route, " -> ");
     }
-    if (!reallife) {
-      printf(
-          "Estimated price and fuel consumption based on average data (7.7l/km - 1.85€/l):\n"
-          );
+    if (distance != 0) {
+      if (!reallife) {
+        printf(
+            "Estimated price and fuel consumption based on average data (7.7l/km - 1.85€/l):\n"
+            );
+      }
+      const double liter =
+          calculate_fuel_consumption(distance, fuel_efficiency);
+      calculate_liter_price(liter, price_per_liter);
+      *complete_distance += distance;
+      printf("\n");
     }
-    const double liter =
-        calculate_fuel_consumption(distance, fuel_efficiency);
-    calculate_liter_price(liter, price_per_liter);
-    *complete_distance += distance;
-    printf("\n");
   }
 }
 
@@ -311,7 +313,8 @@ int main(const int argc, char* argv[]) {
   // calculate distances
   calculate_distances(waypoints, waypoints_size, dictionary, reallife, debug,
                       &complete_route, &complete_distance);
-  if (strlen(complete_route) > 0 && waypoints_size > 2) {
+  if (complete_route != nullptr && strlen(complete_route) > 0 && waypoints_size
+      > 2) {
     printf("%s\n", complete_route);
     const double liter =
         calculate_fuel_consumption(complete_distance, fuel_efficiency);

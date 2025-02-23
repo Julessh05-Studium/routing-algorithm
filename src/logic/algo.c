@@ -55,13 +55,16 @@ ROUTE* get_route_min_dist(ROUTE* routes, const int size,
   int min_distance = -1;
   ROUTE* route = nullptr;
   for (int i = 0; i < size; i++) {
-    if (min_distance < 0 && !city_visited(routes[i].destination.name,
-                                          applicable_cities,
-                                          cities_size) ||
-        routes[i].distance > 0 && routes[i].distance < min_distance &&
+    if (routes[i].distance == 0 && !city_visited(routes[i].destination.name,
+                                                 applicable_cities,
+                                                 cities_size) ||
+        routes[i].distance > 0 && (
+          min_distance < 0 || routes[i].distance < min_distance) &&
         !city_visited(routes[i].destination.name, applicable_cities,
                       cities_size)) {
-      min_distance = routes[i].distance;
+      if (routes[i].distance != 0) {
+        min_distance = routes[i].distance;
+      }
       route = &routes[i];
     }
   }
@@ -136,8 +139,8 @@ int dijkstra(
         routes, DICT_SIZE, all_cities,
         DICT_SIZE);
     if (shortest_route == nullptr) {
-      printf("No path could be found\n");
-      exit(1);
+      // No further path can be found here
+      break;
     }
     const CITY sr_destination = shortest_route->destination;
     const VALUE* value = get_value(dict, sr_destination.name);
@@ -172,9 +175,14 @@ int dijkstra(
 
   // Print route to target
   const ROUTE* target_route = get_route_for_city(routes, DICT_SIZE, target);
-  printf("Destination %s reached:\n", target);
-  print_route(target_route, start, complete_route, debug);
-  const int distance = target_route->distance;
+  int distance = 0;
+  if (target_route->distance != -1) {
+    printf("Destination %s reached:\n", target);
+    print_route(target_route, start, complete_route, debug);
+    distance = target_route->distance;
+  } else {
+    printf("No path could be found\n");
+  }
 
   // Free mem
   for (int i = 0; i < DICT_SIZE; i++) {
