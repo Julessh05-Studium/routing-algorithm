@@ -9,13 +9,13 @@
 
 /* VALUE FUNCTIONS */
 
-bool connection_in_values(const VALUE *val, const CONNECTION *connection) {
+bool connection_in_values(const VALUE* val, const CONNECTION* connection) {
   if (val == nullptr || connection == nullptr) {
     return true;
   }
 
   for (int i = 0; i < val->size; ++i) {
-    const CONNECTION *tmp = &val->connections[i];
+    const CONNECTION* tmp = &val->connections[i];
     if (strcmp(tmp->destination.name, connection->destination.name) == 0) {
       return true;
     }
@@ -95,6 +95,15 @@ bool remove_from_dict(DICTIONARY* dict, const char* city) {
 }
 
 /* DICTIONARY FUNCTIONS */
+
+bool contains(const DICTIONARY* dict, const char* city) {
+  for (int i = 0; i < dict->size; ++i) {
+    if (strcmp(dict->keys[i].name, city) == 0) {
+      return true;
+    }
+  }
+  return false;
+}
 
 bool add_to_dictionary(DICTIONARY* dict, const CITY* key, VALUE* value) {
   const int size = dict->size;

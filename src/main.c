@@ -61,12 +61,15 @@ DICTIONARY* check_map(const char* identifier, const char* value) {
  * Checks for the start city marker and returns the city marker if found
  * @param identifier the identifier to be checked for the start identifier
  * @param value the start city
+ * @param dict the dictionary to search the city in to validate the input
  * @return the start city passed to this program
  */
-const char* check_start(const char* identifier, const char* value) {
+const char* check_start(const char* identifier, const char* value,
+                        const DICTIONARY* dict) {
   if (strcmp(identifier, START_LONG) == 0 || strcmp(identifier, START_SHORT) ==
       0) {
-    if (value == nullptr || strcmp(value, "") == 0) {
+    if (value == nullptr || strcmp(value, "") == 0 || !contains(
+            dict, value)) {
       fprintf(stderr, "a valid start name has to be passed.");
       exit(1);
     }
@@ -79,13 +82,16 @@ const char* check_start(const char* identifier, const char* value) {
  * Checks for the target city marker and returns the city marker if found
  * @param identifier the identifier to be checked for the target identifier
  * @param value the target city
+ * @param dict the dictionary to search the city in to validate the input
  * @return the target city passed to this program
  */
-const char* check_target(const char* identifier, const char* value) {
+const char* check_target(const char* identifier, const char* value,
+                         const DICTIONARY* dict) {
   if (strcmp(identifier, TARGET_LONG) == 0 || strcmp(identifier, TARGET_SHORT)
       == 0) {
-    if (value == nullptr || strcmp(value, "") == 0) {
-      fprintf(stderr, "a valid target name has to be passed.");
+    if (value == nullptr || strcmp(value, "") == 0 || !contains(
+            dict, value)) {
+      fprintf(stderr, "a valid destination name has to be passed.");
       exit(1);
     }
     return value;
@@ -225,7 +231,7 @@ int main(const int argc, char* argv[]) {
 
     // Check for start city
     if (!start_given) {
-      start = check_start(argv[i], argv[i + 1]);
+      start = check_start(argv[i], argv[i + 1], dictionary);
       if (start != nullptr) {
         start_given = true;
         i++;
@@ -237,7 +243,7 @@ int main(const int argc, char* argv[]) {
 
     // Check for target city
     if (!target_given) {
-      target = check_target(argv[i], argv[i + 1]);
+      target = check_target(argv[i], argv[i + 1], dictionary);
       if (target != nullptr) {
         target_given = true;
         i++;

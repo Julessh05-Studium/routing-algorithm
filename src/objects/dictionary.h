@@ -60,7 +60,8 @@ typedef struct {
  * @return true if given parameters where nullptr or connection is
  * already in value, false otherwise.
  */
-bool connection_in_values(const VALUE *val, const CONNECTION *connection);
+bool connection_in_values(const VALUE* val, const CONNECTION* connection);
+
 
 /**
  * Returns the connection with the smallest distance in the array of the passed value.
@@ -97,6 +98,14 @@ bool remove_from_dict(DICTIONARY* dict, const char* city);
 bool add(VALUE* value, CONNECTION connection);
 
 // DICTIONARY FUNCTIONS
+
+/**
+ * Whether a city is part of the dictionary build by the proided map
+ * @param dict the dictionary to search in
+ * @param city the city to search for
+ * @return whether the city is part of the dictionay
+ */
+bool contains(const DICTIONARY* dict, const char* city);
 
 /**
  * Appends a new entry with key and value to the passed dictionary
