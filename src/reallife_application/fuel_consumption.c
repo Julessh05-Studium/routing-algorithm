@@ -11,7 +11,7 @@
 
 double query_fuel_efficiency() {
   printf(
-      "Enter the fuel efficiency of your car to get the fuel consumption for this route, or press n to exit: ");
+      "Enter the fuel efficiency of your car (l/km) to get the fuel consumption for this route, or press n to exit: ");
   char* fuel_consumption = malloc(sizeof(char) * 10);
   scanf("%s", fuel_consumption);
   if (strcmp(fuel_consumption, "n") == 0) {
@@ -33,7 +33,7 @@ double calculate_fuel_consumption(const int distance,
 
 
 double query_liter_price() {
-  printf("Enter the price per liter, or press n to exit: ");
+  printf("Enter the price per liter (€/l), or press n to exit: ");
   char* liter_price = malloc(sizeof(char) * 10);
   scanf("%s", liter_price);
   if (strcmp(liter_price, "n") == 0) {

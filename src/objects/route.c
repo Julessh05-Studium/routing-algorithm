@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 void append_to_route(ROUTE* route, const CONNECTION connection) {
   CONNECTION* tmp_route;
@@ -20,12 +21,23 @@ void append_to_route(ROUTE* route, const CONNECTION connection) {
   route->length++;
 }
 
-void print_route(const ROUTE* route, const char* start) {
+void print_route(const ROUTE* route, const char* start,
+                 char** complete_route) {
   printf("%s -> ", start);
   for (int i = 0; i < route->length; i++) {
-    printf("%s", route->connections[i].destination.name);
+    const char* connection = route->connections[i].destination.name;
+    printf("%s", connection);
+    char* tmp_complete_route = realloc(*complete_route,
+                                       sizeof(char) * (
+                                         strlen(*complete_route) + strlen(
+                                             connection) + 4
+                                       )
+        );
+    *complete_route = tmp_complete_route;
+    strcat(*complete_route, connection);
     if (i != route->length - 1) {
       printf(" -> ");
+      strcat(*complete_route, " -> ");
     } else {
       printf("\n");
     }

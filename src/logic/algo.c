@@ -92,7 +92,7 @@ ROUTE* get_route_for_city(ROUTE* routes, const int size, const char* name) {
  * @param start the start city name
  */
 void create_routes(ROUTE* routes, const CITY* all_cities, const int size,
-                   const char* start) {
+                   const char** start) {
   for (int i = 0; i < size; i++) {
     ROUTE* route = malloc(sizeof(ROUTE));
     route->destination = all_cities[i];
@@ -112,7 +112,8 @@ int dijkstra(
     const DICTIONARY* dict,
     const char* start,
     const char* target,
-    const bool debug
+    const bool debug,
+    char** complete_route
     ) {
   // constant var for dictionary size
   const int DICT_SIZE = dict->size;
@@ -152,7 +153,7 @@ int dijkstra(
         current_route->distance = tmp_length;
         current_route->length = route->length;
         if (debug) {
-          print_route(current_route, start);
+          print_route(current_route, start, complete_route);
         }
       }
     }
@@ -168,7 +169,7 @@ int dijkstra(
   // Print route to target
   const ROUTE* target_route = get_route_for_city(routes, DICT_SIZE, target);
   printf("Destination %s reached:\n", target);
-  print_route(target_route, start);
+  print_route(target_route, start, complete_route);
   const int distance = target_route->distance;
 
   // Free mem

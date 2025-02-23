@@ -1,3 +1,4 @@
+#include <iso646.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -26,6 +27,9 @@
 #define WAYPOINT_SHORT "-wp"
 
 #define REALLIFE_ACTIVE "--real"
+
+double fuel_efficiency = 7.7;
+double price_per_liter = 1.85;
 
 /**
  * Checks whether the identifier marks the path of the map and returns the parsed dictionary if successful
@@ -157,13 +161,16 @@ const char** create_waypoint_arr(
  * @param dictionary the dictionary of cities
  * @param reallife whether to apply reallife application or not
  * @param debug whether to enable debug mode or not
+ * @param complete_route the string for the complete route, applying when waypoints are added
  */
 void calculate_distances(
     const char** waypoints,
     const int waypoints_size,
     const DICTIONARY* dictionary,
     const bool reallife,
-    const bool debug
+    const bool debug,
+    char** complete_route,
+    int* complete_distance
     ) {
   /*
    * average data for fuel efficiency and price per liter
@@ -175,8 +182,6 @@ void calculate_distances(
    * price per liter source:
    * https://de.statista.com/statistik/daten/studie/1690/umfrage/preis-fuer-einen-liter-superbenzin-monatsdurchschnittswerte/
   */
-  double fuel_efficiency = 7.7;
-  double price_per_liter = 1.85;
   if (reallife) {
     // Query specific user data
     fuel_efficiency = query_fuel_efficiency();
@@ -187,7 +192,15 @@ void calculate_distances(
   int distance = 0;
 
   for (int i = 0; i < waypoints_size - 1; i++) {
-    distance = dijkstra(dictionary, waypoints[i], waypoints[i + 1], debug);
+    distance = dijkstra(dictionary, waypoints[i], waypoints[i + 1], debug,
+                        complete_route);
+    if (i != waypoints_size - 2) {
+      char* tmp_complete_route = realloc(*complete_route,
+                                         sizeof(char) * strlen(
+                                             *complete_route) + 4);
+      *complete_route = tmp_complete_route;
+      strcat(*complete_route, " -> ");
+    }
     if (!reallife) {
       printf(
           "Estimated price and fuel consumption based on average data (7.7l/km - 1.85€/l):\n"
@@ -196,6 +209,7 @@ void calculate_distances(
     const double liter =
         calculate_fuel_consumption(distance, fuel_efficiency);
     calculate_liter_price(liter, price_per_liter);
+    *complete_distance += distance;
     printf("\n");
   }
 }
@@ -217,6 +231,8 @@ int main(const int argc, char* argv[]) {
   char** waypoints = malloc(sizeof(char*) * 2);
   int waypoints_size = 2;
   bool reallife = false;
+  char* complete_route = nullptr;
+  int complete_distance = 0;
 
   for (int i = 1; i < argc; ++i) {
     // Check for the map
@@ -237,6 +253,13 @@ int main(const int argc, char* argv[]) {
         i++;
         // Add start to waypoints array
         waypoints[0] = start;
+
+        // Append start to complete route
+        const char* tmp_start = malloc(sizeof(char) * (strlen(start) + 4));
+        strcpy(tmp_start, start);
+        strcat(tmp_start, " -> ");
+        complete_route = malloc(strlen(tmp_start));
+        strcat(complete_route, tmp_start);
         continue;
       }
     }
@@ -284,7 +307,12 @@ int main(const int argc, char* argv[]) {
   }
 
   // calculate distances
-  calculate_distances(waypoints, waypoints_size, dictionary, reallife, debug);
+  calculate_distances(waypoints, waypoints_size, dictionary, reallife, debug,
+                      &complete_route, &complete_distance);
+  printf("%s\n", complete_route);
+  const double liter =
+      calculate_fuel_consumption(complete_distance, fuel_efficiency);
+  calculate_liter_price(liter, price_per_liter);
   // Free memory
   free(waypoints);
   return EXIT_SUCCESS;
